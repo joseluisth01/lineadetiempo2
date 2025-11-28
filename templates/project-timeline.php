@@ -224,7 +224,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             position: relative;
             display: flex;
             align-items: center;
-            margin-bottom: 40px;
+            margin-bottom: 20px;
             opacity: 0;
             transform: translateY(30px);
             animation: fadeInUp 0.8s forwards;
