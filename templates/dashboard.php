@@ -126,6 +126,43 @@
             letter-spacing: 1px;
         }
         
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+        
+        .action-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 30px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: block;
+        }
+        
+        .action-card:hover {
+            border-color: rgba(253, 196, 37, 0.3);
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateY(-2px);
+        }
+        
+        .action-card h3 {
+            font-size: 16px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .action-card p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 0.5px;
+        }
+        
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -238,6 +275,7 @@
         <div class="navbar-menu">
             <a href="<?php echo home_url('/timeline-dashboard'); ?>" class="active">Dashboard</a>
             <?php if ($current_user && ($current_user->role === 'super_admin' || $current_user->role === 'administrador')): ?>
+                <a href="<?php echo home_url('/timeline-proyectos'); ?>">Proyectos</a>
                 <a href="<?php echo home_url('/timeline-usuarios'); ?>">Usuarios</a>
             <?php endif; ?>
             <a href="<?php echo home_url('/timeline-perfil'); ?>">Perfil</a>
@@ -273,6 +311,25 @@
             <p>Gestión de proyectos y seguimiento de actividades</p>
         </div>
         
+        <?php if ($current_user->role === 'super_admin' || $current_user->role === 'administrador'): ?>
+        <div class="quick-actions">
+            <a href="<?php echo home_url('/timeline-proyecto-nuevo'); ?>" class="action-card">
+                <h3>+ Nuevo Proyecto</h3>
+                <p>Crear un nuevo proyecto de construcción</p>
+            </a>
+            
+            <a href="<?php echo home_url('/timeline-proyectos'); ?>" class="action-card">
+                <h3>Ver Proyectos</h3>
+                <p>Gestionar todos los proyectos activos</p>
+            </a>
+            
+            <a href="<?php echo home_url('/timeline-usuarios'); ?>" class="action-card">
+                <h3>Gestionar Usuarios</h3>
+                <p>Administrar clientes y permisos</p>
+            </a>
+        </div>
+        <?php endif; ?>
+        
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-title">Proyectos Activos</div>
@@ -281,27 +338,30 @@
             </div>
             
             <div class="stat-card">
-                <div class="stat-title">Tareas Pendientes</div>
+                <div class="stat-title">Hitos Pendientes</div>
                 <div class="stat-value">0</div>
                 <div class="stat-label">Por completar</div>
             </div>
             
             <div class="stat-card">
-                <div class="stat-title">Completadas</div>
+                <div class="stat-title">Completados</div>
                 <div class="stat-value">0</div>
                 <div class="stat-label">Este mes</div>
             </div>
         </div>
         
         <div class="info-section">
-            <h2>Sistema Timeline</h2>
-            <p>Plataforma de gestión integral de proyectos de construcción para BeBuilt. Próximas funcionalidades en desarrollo:</p>
+            <h2>Sistema Timeline BeBuilt</h2>
+            <p>Plataforma de gestión integral de proyectos de construcción. El sistema ya está listo para:</p>
             <ul>
-                <li>Gestión completa de proyectos de construcción</li>
-                <li>Sistema de tareas y subtareas con seguimiento</li>
-                <li>Timeline visual de actividades y milestones</li>
-                <li>Notificaciones en tiempo real</li>
-                <li>Reportes y análisis detallados</li>
+                <li><strong>✓</strong> Gestión completa de proyectos con fechas y descripciones</li>
+                <li><strong>✓</strong> Asignación de múltiples clientes por proyecto</li>
+                <li><strong>✓</strong> Sistema de usuarios con 3 roles (Super Admin, Administrador, Cliente)</li>
+                <li><strong>✓</strong> Notificaciones automáticas por email</li>
+                <li><strong>✓</strong> Log de actividad completo para auditoría</li>
+                <li><strong>→</strong> Timeline visual interactivo (próximamente)</li>
+                <li><strong>→</strong> Gestión de hitos con imágenes (próximamente)</li>
+                <li><strong>→</strong> Área de documentos descargables (próximamente)</li>
             </ul>
         </div>
     </div>

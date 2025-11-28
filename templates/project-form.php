@@ -184,6 +184,74 @@ $page_title = $is_edit ? 'Editar Proyecto' : 'Nuevo Proyecto';
             letter-spacing: 1px;
         }
         
+        .file-upload-wrapper {
+            margin-top: 15px;
+        }
+        
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            padding: 50px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .upload-area:hover {
+            border-color: rgba(253, 196, 37, 0.5);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .upload-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .upload-formats {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        .image-preview-wrapper {
+            margin-top: 20px;
+            position: relative;
+        }
+        
+        .image-preview {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: block;
+        }
+        
+        .btn-remove-image {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: rgba(255, 107, 107, 0.1);
+            color: rgba(255, 107, 107, 0.9);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-remove-image:hover {
+            background: rgba(255, 107, 107, 0.2);
+            border-color: rgba(255, 107, 107, 0.5);
+        }
+        
         .clients-selection {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -361,21 +429,31 @@ $page_title = $is_edit ? 'Editar Proyecto' : 'Nuevo Proyecto';
                         </div>
                         
                         <div class="form-group full-width">
-                            <label for="featured_image">URL de Imagen Destacada</label>
-                            <input type="url" id="featured_image" name="featured_image" 
-                                   value="<?php echo $is_edit ? esc_attr($project->featured_image) : ''; ?>"
-                                   onchange="previewImage(this.value)">
-                            <div class="help-text">URL completa de la imagen principal del proyecto</div>
-                            
-                            <?php if ($is_edit && $project->featured_image): ?>
-                            <div class="image-preview" id="image-preview">
-                                <img src="<?php echo esc_url($project->featured_image); ?>" alt="Preview">
+                            <label for="featured_image">Imagen Destacada</label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" 
+                                       id="featured_image_file" 
+                                       accept="image/*"
+                                       onchange="handleImageUpload(this)"
+                                       style="display: none;">
+                                <input type="hidden" id="featured_image" name="featured_image" 
+                                       value="<?php echo $is_edit ? esc_attr($project->featured_image) : ''; ?>">
+                                
+                                <div class="upload-area" id="upload-area" onclick="document.getElementById('featured_image_file').click()">
+                                    <div class="upload-icon">📁</div>
+                                    <div class="upload-text">Haz clic para seleccionar una imagen</div>
+                                    <div class="upload-formats">JPG, PNG, GIF (máx. 5MB)</div>
+                                </div>
+                                
+                                <div class="image-preview-wrapper" id="image-preview-wrapper" style="<?php echo ($is_edit && $project->featured_image) ? '' : 'display: none;'; ?>">
+                                    <img src="<?php echo $is_edit ? esc_url($project->featured_image) : ''; ?>" 
+                                         alt="Preview" 
+                                         id="preview-img"
+                                         class="image-preview">
+                                    <button type="button" class="btn-remove-image" onclick="removeImage()">✕ Eliminar</button>
+                                </div>
                             </div>
-                            <?php else: ?>
-                            <div class="image-preview" id="image-preview" style="display: none;">
-                                <img src="" alt="Preview" id="preview-img">
-                            </div>
-                            <?php endif; ?>
+                            <div class="help-text">Imagen principal del proyecto que se mostrará en las tarjetas</div>
                         </div>
                     </div>
                 </div>
@@ -430,16 +508,46 @@ $page_title = $is_edit ? 'Editar Proyecto' : 'Nuevo Proyecto';
     </div>
     
     <script>
-        function previewImage(url) {
-            const preview = document.getElementById('image-preview');
-            const img = document.getElementById('preview-img');
-            
-            if (url) {
-                img.src = url;
-                preview.style.display = 'block';
-            } else {
-                preview.style.display = 'none';
+        function handleImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                // Validar tamaño (5MB máximo)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('La imagen es demasiado grande. Máximo 5MB.');
+                    return;
+                }
+                
+                // Validar tipo
+                if (!file.type.match('image.*')) {
+                    alert('Por favor selecciona una imagen válida.');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const base64String = e.target.result;
+                    
+                    // Guardar en campo oculto
+                    document.getElementById('featured_image').value = base64String;
+                    
+                    // Mostrar preview
+                    document.getElementById('preview-img').src = base64String;
+                    document.getElementById('upload-area').style.display = 'none';
+                    document.getElementById('image-preview-wrapper').style.display = 'block';
+                };
+                
+                reader.readAsDataURL(file);
             }
+        }
+        
+        function removeImage() {
+            document.getElementById('featured_image').value = '';
+            document.getElementById('featured_image_file').value = '';
+            document.getElementById('preview-img').src = '';
+            document.getElementById('upload-area').style.display = 'block';
+            document.getElementById('image-preview-wrapper').style.display = 'none';
         }
     </script>
     <?php wp_footer(); ?>

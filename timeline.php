@@ -563,13 +563,26 @@ class Timeline_Plugin {
             wp_die('Error de seguridad');
         }
         
+        // Procesar imagen
+        $featured_image = '';
+        if (!empty($_POST['featured_image'])) {
+            $image_data = $_POST['featured_image'];
+            
+            // Si es base64, guardar como archivo
+            if (strpos($image_data, 'data:image') === 0) {
+                $featured_image = $this->save_base64_image($image_data, 'project');
+            } else {
+                $featured_image = $image_data;
+            }
+        }
+        
         $project_data = array(
             'name' => $_POST['name'],
             'address' => $_POST['address'],
             'start_date' => $_POST['start_date'],
             'end_date' => $_POST['end_date'],
             'description' => $_POST['description'],
-            'featured_image' => $_POST['featured_image']
+            'featured_image' => $featured_image
         );
         
         $project_id = $this->projects->create_project($project_data, $current_user->id);
@@ -610,13 +623,26 @@ class Timeline_Plugin {
         
         $project_id = intval($_POST['project_id']);
         
+        // Procesar imagen
+        $featured_image = '';
+        if (!empty($_POST['featured_image'])) {
+            $image_data = $_POST['featured_image'];
+            
+            // Si es base64, guardar como archivo
+            if (strpos($image_data, 'data:image') === 0) {
+                $featured_image = $this->save_base64_image($image_data, 'project');
+            } else {
+                $featured_image = $image_data;
+            }
+        }
+        
         $project_data = array(
             'name' => $_POST['name'],
             'address' => $_POST['address'],
             'start_date' => $_POST['start_date'],
             'end_date' => $_POST['end_date'],
             'description' => $_POST['description'],
-            'featured_image' => $_POST['featured_image']
+            'featured_image' => $featured_image
         );
         
         $result = $this->projects->update_project($project_id, $project_data, $current_user->id);
@@ -637,6 +663,48 @@ class Timeline_Plugin {
             wp_redirect(home_url('/timeline-proyecto-editar/' . $project_id . '?error=failed'));
         }
         exit;
+    }
+    
+    /**
+     * Guardar imagen base64 como archivo
+     */
+    private function save_base64_image($base64_string, $prefix = 'image') {
+        // Extraer el tipo de imagen y los datos
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64_string, $type)) {
+            $base64_string = substr($base64_string, strpos($base64_string, ',') + 1);
+            $type = strtolower($type[1]); // jpg, png, gif
+            
+            // Validar tipo de imagen
+            if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png'])) {
+                return '';
+            }
+            
+            $base64_string = base64_decode($base64_string);
+            
+            if ($base64_string === false) {
+                return '';
+            }
+            
+            // Crear directorio si no existe
+            $upload_dir = wp_upload_dir();
+            $timeline_dir = $upload_dir['basedir'] . '/timeline-projects';
+            
+            if (!file_exists($timeline_dir)) {
+                wp_mkdir_p($timeline_dir);
+            }
+            
+            // Generar nombre único
+            $filename = $prefix . '_' . uniqid() . '.' . $type;
+            $filepath = $timeline_dir . '/' . $filename;
+            
+            // Guardar archivo
+            if (file_put_contents($filepath, $base64_string)) {
+                // Retornar URL
+                return $upload_dir['baseurl'] . '/timeline-projects/' . $filename;
+            }
+        }
+        
+        return '';
     }
     
     /**

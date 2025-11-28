@@ -40,6 +40,27 @@
             color: #000;
         }
         
+        .navbar-menu {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .navbar-menu a {
+            color: #666;
+            text-decoration: none;
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+        
+        .navbar-menu a:hover,
+        .navbar-menu a.active {
+            color: #000;
+        }
+        
         .navbar-user {
             display: flex;
             align-items: center;
@@ -100,7 +121,6 @@
             font-size: 16px;
             color: #666;
             line-height: 1.6;
-            max-width: 800px;
             margin: 0 auto;
         }
         
@@ -111,26 +131,21 @@
         
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(1fr, 1fr));
             gap: 40px;
         }
         
         .project-card {
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             transition: transform 0.3s, box-shadow 0.3s;
         }
         
-        .project-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-        }
         
         .project-status {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 12px;
+            left: 12px;
             background: #000;
             color: #fff;
             padding: 8px 16px;
@@ -139,14 +154,15 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             z-index: 10;
+            border-radius: 10px;
         }
         
         .project-status.en-proceso {
-            background: #000;
+            color: #FDC425;
         }
         
         .project-status.finalizado {
-            background: #28a745;
+            color: #FFDE88;
         }
         
         .project-image {
@@ -154,19 +170,22 @@
             height: 350px;
             object-fit: cover;
             display: block;
+            border-radius: 20px;
         }
         
         .project-content {
             background: #fff;
             padding: 30px;
+            text-align: center;
         }
         
         .project-title {
-            font-size: 22px;
-            font-weight: 600;
+            font-size: 25px;
+            font-weight: bold;
             color: #000;
-            margin-bottom: 15px;
+            margin-bottom: 30px;
             line-height: 1.3;
+            text-align: center;
         }
         
         .btn-view-project {
@@ -174,16 +193,18 @@
             background: #FDC425;
             color: #000;
             padding: 14px 30px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: bold;
             letter-spacing: 1px;
             text-transform: uppercase;
             text-decoration: none;
             transition: all 0.3s;
             border: none;
             cursor: pointer;
-            width: 100%;
+            width: 30%;
             text-align: center;
+            margin: 0 auto;
+            border-radius: 10px;
         }
         
         .btn-view-project:hover {
@@ -228,6 +249,10 @@
 <body>
     <nav class="navbar">
         <div class="navbar-brand">BeBuilt</div>
+        <div class="navbar-menu">
+            <a href="<?php echo home_url('/timeline-mis-proyectos'); ?>" class="active">Mis Proyectos</a>
+            <a href="<?php echo home_url('/timeline-perfil'); ?>">Mi Perfil</a>
+        </div>
         <div class="navbar-user">
             <div class="user-info">
                 <div class="user-name"><?php echo esc_html($current_user->username); ?></div>

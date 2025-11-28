@@ -389,18 +389,22 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="navbar-brand">Timeline</div>
+        <div class="navbar-brand">BeBuilt</div>
         <div class="navbar-menu">
             <a href="<?php echo home_url('/timeline-dashboard'); ?>">Dashboard</a>
-            <a href="<?php echo home_url('/timeline-usuarios'); ?>" style="background: rgba(255,255,255,0.2);">Usuarios</a>
+            <a href="<?php echo home_url('/timeline-proyectos'); ?>">Proyectos</a>
+            <a href="<?php echo home_url('/timeline-usuarios'); ?>" class="active">Usuarios</a>
+            <a href="<?php echo home_url('/timeline-perfil'); ?>">Perfil</a>
         </div>
         <div class="navbar-user">
             <div class="user-info">
                 <div class="user-name"><?php echo esc_html($current_user->username); ?></div>
-                <div class="user-role">Super Administrador</div>
+                <div class="user-role">
+                    <?php echo $current_user->role === 'super_admin' ? 'Super Administrador' : 'Administrador'; ?>
+                </div>
             </div>
             <a href="<?php echo admin_url('admin-post.php?action=timeline_logout'); ?>" class="btn-logout">
-                Cerrar Sesión
+                Salir
             </a>
         </div>
     </nav>

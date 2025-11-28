@@ -345,7 +345,22 @@
     <div class="container">
         <div class="page-header">
             <h1>Proyectos</h1>
-            <a href="<?php echo home_url('/timeline-proyecto-nuevo'); ?>" class="btn-primary">+ Nuevo Proyecto</a>
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <select id="client-filter" style="padding: 12px 40px 12px 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'rgba(255,255,255,0.4)\' d=\'M6 9L1 4h10z\'/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 15px center; background-color: rgba(0,0,0,0.3);">
+                    <option value="all">Todos los proyectos</option>
+                    <option value="unassigned">Sin clientes asignados</option>
+                    <?php
+                    // Obtener todos los clientes
+                    if ($projects_class) {
+                        $all_clients = $projects_class->get_available_clients();
+                        foreach ($all_clients as $client) {
+                            echo '<option value="' . esc_attr($client->id) . '">' . esc_html($client->username) . '</option>';
+                        }
+                    }
+                    ?>
+                </select>
+                <a href="<?php echo home_url('/timeline-proyecto-nuevo'); ?>" class="btn-primary">+ Nuevo Proyecto</a>
+            </div>
         </div>
         
         <?php if (isset($_GET['success'])): ?>
@@ -399,10 +414,19 @@
                             <?php if (!empty($clients)): ?>
                             <div class="project-clients">
                                 <div class="project-clients-label">Clientes Asignados</div>
-                                <?php foreach ($clients as $client): ?>
+                                <?php 
+                                $client_ids = array();
+                                foreach ($clients as $client): 
+                                    $client_ids[] = $client->id;
+                                ?>
                                     <span class="client-tag"><?php echo esc_html($client->username); ?></span>
                                 <?php endforeach; ?>
                             </div>
+                            <?php 
+                            $client_ids_str = !empty($client_ids) ? implode(',', $client_ids) : 'none';
+                            ?>
+                            <?php else: ?>
+                            <?php $client_ids_str = 'none'; ?>
                             <?php endif; ?>
                             
                             <div class="project-actions">
@@ -410,6 +434,7 @@
                                 <a href="<?php echo home_url('/timeline-proyecto-editar/' . $project->id); ?>" class="btn-small">Editar</a>
                             </div>
                         </div>
+                        <input type="hidden" class="project-clients-data" value="<?php echo esc_attr($client_ids_str); ?>">
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -420,5 +445,36 @@
             <?php endif; ?>
         </div>
     </div>
+    
+    <script>
+        // Filtro de proyectos por cliente
+        document.getElementById('client-filter').addEventListener('change', function() {
+            const filterValue = this.value;
+            const projectCards = document.querySelectorAll('.project-card');
+            
+            projectCards.forEach(card => {
+                const clientsData = card.querySelector('.project-clients-data');
+                if (!clientsData) return;
+                
+                const clientIds = clientsData.value;
+                
+                if (filterValue === 'all') {
+                    // Mostrar todos
+                    card.style.display = '';
+                } else if (filterValue === 'unassigned') {
+                    // Mostrar solo sin clientes
+                    card.style.display = (clientIds === 'none') ? '' : 'none';
+                } else {
+                    // Filtrar por cliente específico
+                    if (clientIds === 'none') {
+                        card.style.display = 'none';
+                    } else {
+                        const hasClient = clientIds.split(',').includes(filterValue);
+                        card.style.display = hasClient ? '' : 'none';
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
