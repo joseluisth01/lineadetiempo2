@@ -128,7 +128,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         .timeline-bar-container {
             position: relative;
             height: 120px;
-            margin-bottom: 100px;
+            margin-bottom: 50px;
         }
         
         .timeline-bar {
@@ -532,11 +532,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         <div class="navbar-brand">BeBuilt</div>
         <a href="<?php echo home_url('/timeline-mis-proyectos'); ?>" class="btn-back">← Mis Proyectos</a>
     </nav>
-    
-    <div class="header-section">
-        <h1><?php echo esc_html($project->name); ?></h1>
-        <p><?php echo esc_html($project->address); ?></p>
-    </div>
+
     
     <div class="container">
         <!-- Barra de Timeline -->
@@ -578,6 +574,9 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 </div>
             <?php endforeach; ?>
         </div>
+
+        <h1 style="text-align:center"><?php echo esc_html($project->name); ?></h1><br>
+        <p style="text-align:center"><?php echo esc_html($project->description); ?></p><br><br>
         
         <!-- Tarjetas de hitos -->
         <div class="milestones-cards">

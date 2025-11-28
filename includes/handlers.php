@@ -62,44 +62,72 @@ class Timeline_Handlers {
         
         // Crear o actualizar hito
         if ($milestone_id) {
-            // Actualizar
+            // EDITAR - Actualizar hito existente
             $result = $this->milestones->update_milestone($milestone_id, $milestone_data, $user_id);
             
-            if ($result) {
-                // Eliminar imágenes antiguas si hay nuevas
-                if (!empty($_POST['images_data'])) {
+            if (!$result) {
+                wp_redirect(home_url('/timeline-proyecto-admin/' . $project_id . '?error=update_failed'));
+                exit;
+            }
+            
+            $final_milestone_id = $milestone_id;
+            
+            // Procesar imágenes en modo edición
+            if (!empty($_POST['images_data'])) {
+                $images_data = json_decode(stripslashes($_POST['images_data']), true);
+                
+                if (is_array($images_data)) {
+                    // Eliminar todas las imágenes antiguas
                     $db = Timeline_Database::get_instance();
                     $wpdb->delete(
                         $db->get_table_name('milestone_images'),
                         array('milestone_id' => $milestone_id)
                     );
+                    
+                    // Procesar nuevas imágenes
+                    $order = 0;
+                    foreach ($images_data as $image_item) {
+                        if (isset($image_item['type'])) {
+                            if ($image_item['type'] === 'existing' && isset($image_item['url'])) {
+                                // Mantener imagen existente
+                                $this->milestones->add_milestone_image($milestone_id, $image_item['url'], $order);
+                            } elseif ($image_item['type'] === 'new' && isset($image_item['data'])) {
+                                // Guardar nueva imagen
+                                $image_url = $this->save_base64_image($image_item['data'], 'milestone_' . $milestone_id);
+                                if ($image_url) {
+                                    $this->milestones->add_milestone_image($milestone_id, $image_url, $order);
+                                }
+                            }
+                        }
+                        $order++;
+                    }
                 }
-                
-                $final_milestone_id = $milestone_id;
-            } else {
-                wp_redirect(home_url('/timeline-proyecto-admin/' . $project_id . '?error=update_failed'));
-                exit;
             }
+            
         } else {
-            // Crear nuevo
+            // CREAR - Nuevo hito
             $final_milestone_id = $this->milestones->create_milestone($milestone_data, $user_id);
             
             if (!$final_milestone_id) {
                 wp_redirect(home_url('/timeline-proyecto-admin/' . $project_id . '?error=create_failed'));
                 exit;
             }
-        }
-        
-        // Guardar imágenes
-        if (!empty($_POST['images_data'])) {
-            $images = json_decode(stripslashes($_POST['images_data']), true);
             
-            if (is_array($images)) {
-                foreach ($images as $index => $base64_image) {
-                    $image_url = $this->save_base64_image($base64_image, 'milestone_' . $final_milestone_id);
-                    
-                    if ($image_url) {
-                        $this->milestones->add_milestone_image($final_milestone_id, $image_url, $index);
+            // Guardar imágenes para nuevo hito
+            if (!empty($_POST['images_data'])) {
+                $images_data = json_decode(stripslashes($_POST['images_data']), true);
+                
+                if (is_array($images_data)) {
+                    $order = 0;
+                    foreach ($images_data as $image_item) {
+                        if (isset($image_item['type']) && $image_item['type'] === 'new' && isset($image_item['data'])) {
+                            $image_url = $this->save_base64_image($image_item['data'], 'milestone_' . $final_milestone_id);
+                            
+                            if ($image_url) {
+                                $this->milestones->add_milestone_image($final_milestone_id, $image_url, $order);
+                            }
+                        }
+                        $order++;
                     }
                 }
             }

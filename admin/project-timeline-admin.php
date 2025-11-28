@@ -112,6 +112,25 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
             background: rgba(253, 196, 37, 0.25);
         }
         
+        .alert {
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            font-size: 12px;
+            border-left: 2px solid;
+            background: rgba(255, 255, 255, 0.05);
+            letter-spacing: 0.5px;
+        }
+        
+        .alert-success {
+            color: rgba(81, 207, 102, 0.9);
+            border-color: rgba(81, 207, 102, 0.5);
+        }
+        
+        .alert-error {
+            color: rgba(255, 107, 107, 0.9);
+            border-color: rgba(255, 107, 107, 0.5);
+        }
+        
         .milestones-list {
             display: grid;
             gap: 20px;
@@ -232,6 +251,7 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 40px 0;
         }
         
         .modal-content {
@@ -241,7 +261,8 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
             max-width: 800px;
             padding: 50px;
             position: relative;
-            margin: 40px 0;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         .modal-close {
@@ -283,7 +304,7 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
         .form-group select {
             width: 100%;
             padding: 14px;
-            background: rgba(255, 255, 255, 0.05);
+            background: black !important;
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: #ffffff;
             font-size: 14px;
@@ -371,6 +392,27 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
             <p>Gestión de Timeline y Hitos</p>
         </div>
         
+        <?php if (isset($_GET['success'])): ?>
+            <div class="alert alert-success">
+                <?php
+                switch($_GET['success']) {
+                    case 'saved':
+                        echo 'Hito guardado correctamente.';
+                        break;
+                    case 'deleted':
+                        echo 'Hito eliminado correctamente.';
+                        break;
+                }
+                ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_GET['error'])): ?>
+            <div class="alert alert-error">
+                Error al procesar la solicitud.
+            </div>
+        <?php endif; ?>
+        
         <button class="btn-add-milestone" onclick="openMilestoneModal()">+ Añadir Hito</button>
         
         <div class="milestones-list">
@@ -406,7 +448,7 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
                         </div>
                         
                         <div class="milestone-actions">
-                            <button class="btn-small" onclick="editMilestone(<?php echo $milestone->id; ?>)">Editar</button>
+                            <button class="btn-small" onclick='editMilestone(<?php echo json_encode($milestone); ?>)'>Editar</button>
                             <button class="btn-small" onclick="deleteMilestone(<?php echo $milestone->id; ?>)">Eliminar</button>
                         </div>
                     </div>
@@ -464,6 +506,7 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
                     </div>
                     <div id="preview-images" class="preview-images"></div>
                     <input type="hidden" id="images_data" name="images_data" value="">
+                    <input type="hidden" id="keep_existing_images" name="keep_existing_images" value="0">
                 </div>
                 
                 <button type="submit" class="btn-submit">Guardar Hito</button>
@@ -473,23 +516,99 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
     
     <script>
         let imagesArray = [];
+        let isEditMode = false;
+        let existingImages = [];
         
         function openMilestoneModal() {
+            isEditMode = false;
+            existingImages = [];
             document.getElementById('milestoneModal').classList.add('active');
             document.getElementById('modal-title').textContent = 'Nuevo Hito';
             document.getElementById('milestone-form').reset();
             document.getElementById('milestone_id').value = '';
+            document.getElementById('keep_existing_images').value = '0';
             imagesArray = [];
             document.getElementById('preview-images').innerHTML = '';
+            document.body.style.overflow = 'hidden';
         }
         
         function closeMilestoneModal() {
             document.getElementById('milestoneModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
         
-        function editMilestone(id) {
-            // Implementar edición
-            alert('Editar hito ' + id + ' - Por implementar');
+        function editMilestone(milestone) {
+            isEditMode = true;
+            existingImages = milestone.images || [];
+            
+            document.getElementById('milestoneModal').classList.add('active');
+            document.getElementById('modal-title').textContent = 'Editar Hito';
+            document.getElementById('milestone_id').value = milestone.id;
+            document.getElementById('title').value = milestone.title;
+            document.getElementById('date').value = milestone.date;
+            document.getElementById('status').value = milestone.status;
+            document.getElementById('description').value = milestone.description || '';
+            
+            // Cargar imágenes existentes
+            imagesArray = [];
+            const previewContainer = document.getElementById('preview-images');
+            previewContainer.innerHTML = '';
+            
+            if (existingImages.length > 0) {
+                document.getElementById('keep_existing_images').value = '1';
+                existingImages.forEach((img, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'preview-image-item';
+                    div.innerHTML = `
+                        <img src="${img.image_url}" alt="Imagen existente">
+                        <button type="button" class="remove-preview" onclick="removeExistingImage(${index})">×</button>
+                    `;
+                    previewContainer.appendChild(div);
+                });
+            }
+            
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function removeExistingImage(index) {
+            existingImages.splice(index, 1);
+            renderExistingImages();
+            
+            if (existingImages.length === 0) {
+                document.getElementById('keep_existing_images').value = '0';
+            }
+        }
+        
+        function renderExistingImages() {
+            const container = document.getElementById('preview-images');
+            container.innerHTML = '';
+            
+            existingImages.forEach((img, index) => {
+                const div = document.createElement('div');
+                div.className = 'preview-image-item';
+                div.innerHTML = `
+                    <img src="${img.image_url}" alt="Imagen existente">
+                    <button type="button" class="remove-preview" onclick="removeExistingImage(${index})">×</button>
+                `;
+                container.appendChild(div);
+            });
+            
+            // Añadir nuevas imágenes después
+            imagesArray.forEach((img, index) => {
+                const div = document.createElement('div');
+                div.className = 'preview-image-item';
+                div.innerHTML = `
+                    <img src="${img}" alt="Nueva imagen">
+                    <button type="button" class="remove-preview" onclick="removeNewImage(${index})">×</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function removeNewImage(index) {
+            imagesArray.splice(index, 1);
+            renderExistingImages();
+            updateImagesData();
         }
         
         function deleteMilestone(id) {
@@ -509,39 +628,46 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
                     reader.onload = function(event) {
                         const base64 = event.target.result;
                         imagesArray.push(base64);
-                        renderPreview();
+                        renderExistingImages();
                         updateImagesData();
                     };
                     
                     reader.readAsDataURL(file);
                 }
             });
+            
+            // Reset input para permitir seleccionar las mismas imágenes de nuevo
+            e.target.value = '';
         });
         
-        function renderPreview() {
-            const container = document.getElementById('preview-images');
-            container.innerHTML = '';
-            
-            imagesArray.forEach((img, index) => {
-                const div = document.createElement('div');
-                div.className = 'preview-image-item';
-                div.innerHTML = `
-                    <img src="${img}" alt="Preview">
-                    <button type="button" class="remove-preview" onclick="removeImage(${index})">×</button>
-                `;
-                container.appendChild(div);
-            });
-        }
-        
-        function removeImage(index) {
-            imagesArray.splice(index, 1);
-            renderPreview();
-            updateImagesData();
-        }
-        
         function updateImagesData() {
-            document.getElementById('images_data').value = JSON.stringify(imagesArray);
+            const allImages = [];
+            
+            // Añadir imágenes existentes (solo URLs)
+            if (isEditMode && existingImages.length > 0) {
+                existingImages.forEach(img => {
+                    allImages.push({
+                        type: 'existing',
+                        url: img.image_url
+                    });
+                });
+            }
+            
+            // Añadir nuevas imágenes (base64)
+            imagesArray.forEach(base64 => {
+                allImages.push({
+                    type: 'new',
+                    data: base64
+                });
+            });
+            
+            document.getElementById('images_data').value = JSON.stringify(allImages);
         }
+        
+        // Actualizar datos de imágenes antes de enviar el formulario
+        document.getElementById('milestone-form').addEventListener('submit', function(e) {
+            updateImagesData();
+        });
         
         // Cerrar modal al hacer clic fuera
         window.onclick = function(event) {

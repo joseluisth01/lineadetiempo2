@@ -154,13 +154,14 @@ $page_title = $is_edit ? 'Editar Proyecto' : 'Nuevo Proyecto';
         .form-group select {
             width: 100%;
             padding: 14px 0;
-            background: transparent;
+            background: black;
             border: none;
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
             color: #ffffff;
             font-size: 14px;
             font-weight: 300;
             transition: border-color 0.3s;
+            
         }
         
         .form-group textarea {

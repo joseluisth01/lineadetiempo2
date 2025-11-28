@@ -151,6 +151,7 @@ class Timeline_Plugin {
         add_rewrite_rule('^timeline-proyecto-nuevo/?$', 'index.php?timeline_page=project_new', 'top');
         add_rewrite_rule('^timeline-proyecto-editar/([0-9]+)/?$', 'index.php?timeline_page=project_edit&timeline_id=$matches[1]', 'top');
         add_rewrite_rule('^timeline-proyecto/([0-9]+)/?$', 'index.php?timeline_page=project_view&timeline_id=$matches[1]', 'top');
+        add_rewrite_rule('^timeline-proyecto-admin/([0-9]+)/?$', 'index.php?timeline_page=project_admin&timeline_id=$matches[1]', 'top');
     }
     
     /**
@@ -329,10 +330,31 @@ class Timeline_Plugin {
                     exit;
                 }
                 
-                echo '<h1>Vista de Timeline - En desarrollo</h1>';
-                echo '<p>Proyecto ID: ' . $project_id . '</p>';
-                echo '<a href="' . home_url('/timeline-proyectos') . '">Volver a proyectos</a>';
-                exit;
+                // Cargar la vista del timeline para clientes
+                $this->load_template('project-timeline');
+                break;
+                
+            case 'project_admin':
+                if (!$this->is_logged_in()) {
+                    wp_redirect(home_url('/login-proyectos'));
+                    exit;
+                }
+                $current_user = $this->get_current_user();
+                
+                if (!$this->can_manage_projects($current_user)) {
+                    wp_redirect(home_url('/timeline-dashboard'));
+                    exit;
+                }
+                
+                $project_id = get_query_var('timeline_id');
+                if (!$project_id) {
+                    wp_redirect(home_url('/timeline-proyectos'));
+                    exit;
+                }
+                
+                // Cargar la vista de administración del timeline
+                $this->load_template_admin('project-timeline-admin');
+                break;
         }
     }
     
@@ -346,6 +368,9 @@ class Timeline_Plugin {
             $current_user = $this->get_current_user();
             $projects_class = $this->projects;
             $milestones_class = $this->milestones;
+            
+            // Guardar referencia global para que los templates puedan acceder
+            $GLOBALS['timeline_plugin'] = $this;
             
             // Variables específicas por template
             switch($template) {
@@ -388,6 +413,27 @@ class Timeline_Plugin {
             exit;
         } else {
             wp_die('Template no encontrado: ' . $template);
+        }
+    }
+    
+    /**
+     * Cargar template de admin
+     */
+    private function load_template_admin($template) {
+        $template_file = TIMELINE_PLUGIN_DIR . 'admin/' . $template . '.php';
+        
+        if (file_exists($template_file)) {
+            $current_user = $this->get_current_user();
+            $projects_class = $this->projects;
+            $milestones_class = $this->milestones;
+            
+            // Guardar referencia global
+            $GLOBALS['timeline_plugin'] = $this;
+            
+            include $template_file;
+            exit;
+        } else {
+            wp_die('Template de admin no encontrado: ' . $template);
         }
     }
     
@@ -741,7 +787,7 @@ class Timeline_Plugin {
 }
 
 // Inicializar plugin
-new Timeline_Plugin();
+$GLOBALS['timeline_plugin'] = new Timeline_Plugin();
 
 // Hook de activación
 register_activation_hook(__FILE__, function() {

@@ -178,7 +178,7 @@
         .form-group select {
             width: 100%;
             padding: 14px 0;
-            background: transparent;
+            background: black;
             border: none;
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
             color: #ffffff;
