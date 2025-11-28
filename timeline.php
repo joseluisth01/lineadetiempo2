@@ -17,7 +17,8 @@ define('TIMELINE_PLUGIN_URL', plugin_dir_url(__FILE__));
 $required_files = array(
     'includes/database.php',
     'includes/class-projects.php',
-    'includes/class-milestones.php'
+    'includes/class-milestones.php',
+    'includes/handlers.php'
 );
 
 foreach ($required_files as $file) {
