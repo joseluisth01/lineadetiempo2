@@ -130,7 +130,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         .timeline-bar-container {
             position: relative;
             height: 120px;
-            margin-bottom: 100px;
+            margin-bottom: 50px;
         }
 
         .timeline-bar {
@@ -358,6 +358,21 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         .milestone-card-content {
             flex: 1;
             padding: 0;
+        }
+
+        .milestone-card:nth-child(even) .milestone-card-content {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .milestone-card:nth-child(even) .milestone-card-content .milestone-card-date{
+            order: 2;
+        }
+        .milestone-card:nth-child(even) .milestone-card-content .milestone-card-date{
+            order: 1;
         }
 
         .milestone-card-date {
@@ -701,7 +716,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                     <div class="milestone-inner">
 
                         <div class="milestone-card-content">
-                            <div style="display: flex; align-items: center; gap: 15px; justify-content: center;">
+                            <div style="display: flex; align-items: center; gap: 15px;">
                                 <div class="milestone-card-date"><?php echo $date->format('d/m/Y'); ?></div>
                                 <h2 class="milestone-card-title">
                                     <span class="highlight"><?php echo esc_html(explode(' ', $milestone->title)[0]); ?></span>
