@@ -127,136 +127,137 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         }
 
         /* ===== BARRA DE TIMELINE SUPERIOR ===== */
-.timeline-bar-container {
-    width: 100%;
-    padding: 0px;
-    background: #f2f2f2;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    overflow-x: auto;
-    overflow-y: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    scrollbar-width: thin;
-    scrollbar-color: #bfbfbf #f2f2f2;
-}
+        .timeline-bar-container {
+            width: 100%;
+            padding: 0px;
+            background: #f2f2f2;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            overflow-x: auto;
+            overflow-y: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            scrollbar-width: thin;
+            scrollbar-color: #bfbfbf #f2f2f2;
+        }
 
-.timeline-bar-container::-webkit-scrollbar {
-    height: 8px;
-}
+        .timeline-bar-container::-webkit-scrollbar {
+            height: 8px;
+        }
 
-.timeline-bar-container::-webkit-scrollbar-track {
-    background: #f2f2f2;
-}
+        .timeline-bar-container::-webkit-scrollbar-track {
+            background: #f2f2f2;
+        }
 
-.timeline-bar-container::-webkit-scrollbar-thumb {
-    background: #bfbfbf;
-    border-radius: 4px;
-}
+        .timeline-bar-container::-webkit-scrollbar-thumb {
+            background: #bfbfbf;
+            border-radius: 4px;
+        }
 
-.timeline-bar-container::-webkit-scrollbar-thumb:hover {
-    background: #999;
-}
+        .timeline-bar-container::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
 
-/* Contenido scrollable en horizontal */
-.timeline-bar-inner {
-    display: flex;
-    gap: 0px;
-    padding: 0 60px;
-    position: relative;
-    z-index: 2;
-    min-width: max-content;
-}
+        /* Contenido scrollable en horizontal */
+        .timeline-bar-inner {
+            display: flex;
+            gap: 0px;
+            padding: 0 60px;
+            position: relative;
+            z-index: 2;
+            min-width: max-content;
+        }
 
-/* Línea horizontal - AHORA DENTRO DE timeline-bar-inner */
-.timeline-bar-inner::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 100%;
-    top: 36%;
-    transform: translateY(-50%);
-    height: 2px;
-    background: black;
-    z-index: 1;
-    pointer-events: none;
-}
+        /* Línea horizontal - AHORA DENTRO DE timeline-bar-inner */
+        .timeline-bar-inner::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            width: 100%;
+            top: 36%;
+            transform: translateY(-50%);
+            height: 2px;
+            background: black;
+            z-index: 1;
+            pointer-events: none;
+        }
 
-/* Cada hito superior */
-.timeline-top-item {
-    text-align: center;
-    position: relative;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 150px;
-    height: 70px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-}
+        /* Cada hito superior */
+        .timeline-top-item {
+            text-align: center;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
 
-/* CAMBIO 2: Punto con background sólido para ocultar la línea */
-.timeline-top-point {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    border: 2px solid #000;
-    margin: 0 auto;
-    transition: all 0.3s ease;
-    /* Añadir z-index superior y background */
-    position: relative;
-    z-index: 3;
-    background: #f2f2f2;
-}
+        /* CAMBIO 2: Punto con background sólido para ocultar la línea */
+        .timeline-top-point {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            border: 2px solid #000;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+            /* Añadir z-index superior y background */
+            position: relative;
+            z-index: 3;
+            background: #f2f2f2;
+        }
 
-/* Colores según estado - ahora con background visible */
-.timeline-top-item.status-pendiente .timeline-top-point {
-    background: #EDEDED;
-}
+        /* Colores según estado - ahora con background visible */
+        .timeline-top-item.status-pendiente .timeline-top-point {
+            background: #EDEDED;
+        }
 
-.timeline-top-item.status-en_proceso .timeline-top-point {
-    background: #FDC425;
-}
+        .timeline-top-item.status-en_proceso .timeline-top-point {
+            background: #FDC425;
+        }
 
-.timeline-top-item.status-finalizado .timeline-top-point {
-    background: #FFDE88;
-}
+        .timeline-top-item.status-finalizado .timeline-top-point {
+            background: #FFDE88;
+        }
 
-/* Fecha con colores según estado */
-.timeline-top-date {
-    font-size: 13px;
-    font-weight: 600;
-    margin-top: 0px;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-}
+        /* Fecha con colores según estado */
+        .timeline-top-date {
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 0px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
 
-.timeline-top-item.status-pendiente {
-    background: #EDEDED;
-}
+        .timeline-top-item.status-pendiente {
+            background: #EDEDED;
+        }
 
-.timeline-top-item.status-en_proceso {
-    background: #FDC425;
-}
+        .timeline-top-item.status-en_proceso {
+            background: #FDC425;
+        }
 
-.timeline-top-item.status-finalizado {
-    background: #FFDE88;
-}
+        .timeline-top-item.status-finalizado {
+            background: #FFDE88;
+        }
 
-.timeline-top-item:hover .timeline-top-date {
-    font-weight: 700;
-}
+        .timeline-top-item:hover .timeline-top-date {
+            font-weight: 700;
+        }
 
-.timeline-top-item.active .timeline-top-point {
-    background-color: #000;
-}
-.timeline-top-item.active .timeline-top-date {
-    font-weight: 700;
-    font-size: 14px;
-}
+        .timeline-top-item.active .timeline-top-point {
+            background-color: #000;
+        }
+
+        .timeline-top-item.active .timeline-top-date {
+            font-weight: 700;
+            font-size: 14px;
+        }
 
         /* LÍNEA VERTICAL DEL TIMELINE */
         .vertical-timeline {
@@ -496,6 +497,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             line-height: 1.6;
             color: black;
             margin-bottom: 0;
+            text-align: justify;
         }
 
         .milestone-card-description strong {
@@ -695,6 +697,14 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             bottom: 30px;
             position: absolute;
             width: 50%;
+        }
+
+        .milestone-card.active .milestone-inner {
+            border: 2px solid black;
+        }
+
+        .milestone-card.active::after {
+            background: black !important;
         }
 
         .milestone-nav-btn {
@@ -925,6 +935,26 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 // Desactivar el scroll sincronizado temporalmente
                 isScrolling = true;
 
+                // Activar el item en la barra superior
+                const timelineItems = document.querySelectorAll('.timeline-top-item');
+                timelineItems.forEach((item, idx) => {
+                    if (idx === index) {
+                        item.classList.add('active');
+                    } else {
+                        item.classList.remove('active');
+                    }
+                });
+
+                // Activar la card correspondiente
+                const milestoneCards = document.querySelectorAll('.milestone-card');
+                milestoneCards.forEach((card, idx) => {
+                    if (idx === index) {
+                        card.classList.add('active');
+                    } else {
+                        card.classList.remove('active');
+                    }
+                });
+
                 milestoneCard.scrollIntoView({
                     behavior: 'smooth',
                     block: 'center'
@@ -962,52 +992,72 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             });
 
             function updateTimelinePosition() {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                const windowHeight = window.innerHeight;
-                const timelineStart = verticalTimeline.offsetTop;
-                const timelineHeight = verticalTimeline.offsetHeight;
-
-                // Calcular qué hito está más cerca del centro de la pantalla
-                let closestIndex = 0;
-                let closestDistance = Infinity;
-
-                milestoneCards.forEach((card, index) => {
-                    const cardTop = card.offsetTop;
-                    const cardCenter = cardTop + (card.offsetHeight / 2);
-                    const screenCenter = scrollTop + (windowHeight / 2);
-                    const distance = Math.abs(cardCenter - screenCenter);
-
-                    if (distance < closestDistance) {
-                        closestDistance = distance;
-                        closestIndex = index;
-                    }
-                });
-
-                // Desplazar la barra horizontal para centrar el hito correspondiente
-                const timelineItems = timelineBarInner.querySelectorAll('.timeline-top-item');
-                if (timelineItems[closestIndex]) {
-                    const itemLeft = timelineItems[closestIndex].offsetLeft;
-                    const itemWidth = timelineItems[closestIndex].offsetWidth;
-                    const containerWidth = timelineBarInner.parentElement.offsetWidth;
-
-                    // Calcular el scroll para centrar el item
-                    const scrollLeft = itemLeft - (containerWidth / 2) + (itemWidth / 2);
-
-                    timelineBarInner.parentElement.scrollTo({
-                        left: scrollLeft,
-                        behavior: 'smooth'
-                    });
-
-                    // Destacar el item activo
-                    timelineItems.forEach((item, idx) => {
-                        if (idx === closestIndex) {
-                            item.classList.add('active');
-                        } else {
-                            item.classList.remove('active');
-                        }
-                    });
-                }
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const timelineStart = verticalTimeline.offsetTop;
+    
+    // Punto de referencia: 1/3 desde arriba de la pantalla
+    const detectionPoint = scrollTop + (windowHeight / 3);
+    
+    let closestIndex = 0;
+    let closestDistance = Infinity;
+    
+    // Si estamos antes del timeline, activar el primero
+    if (scrollTop < timelineStart - 200) {
+        closestIndex = 0;
+    } else {
+        // Buscar el hito cuyo centro esté más cerca del punto de detección
+        milestoneCards.forEach((card, index) => {
+            const cardTop = card.offsetTop;
+            const cardHeight = card.offsetHeight;
+            const cardCenter = cardTop + (cardHeight / 2);
+            
+            // Calcular distancia al punto de detección
+            const distance = Math.abs(cardCenter - detectionPoint);
+            
+            // Si este hito está más cerca que el anterior, actualizarlo
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestIndex = index;
             }
+        });
+    }
+    
+    // Desplazar la barra horizontal para centrar el hito correspondiente
+    const timelineItems = timelineBarInner.querySelectorAll('.timeline-top-item');
+    if (timelineItems[closestIndex]) {
+        const itemLeft = timelineItems[closestIndex].offsetLeft;
+        const itemWidth = timelineItems[closestIndex].offsetWidth;
+        const containerWidth = timelineBarInner.parentElement.offsetWidth;
+        
+        // Calcular el scroll para centrar el item
+        const scrollLeft = itemLeft - (containerWidth / 2) + (itemWidth / 2);
+        
+        timelineBarInner.parentElement.scrollTo({
+            left: scrollLeft,
+            behavior: 'smooth'
+        });
+        
+        // Destacar el item activo en la barra superior
+        timelineItems.forEach((item, idx) => {
+            if (idx === closestIndex) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+        
+        // Destacar también el milestone-card activo
+        milestoneCards.forEach((card, idx) => {
+            if (idx === closestIndex) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+        });
+    }
+}
+
         }
 
         function openMilestoneModal(index) {
