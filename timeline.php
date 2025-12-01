@@ -19,6 +19,7 @@ $required_files = array(
     'includes/database.php',
     'includes/class-projects.php',
     'includes/class-milestones.php',
+    'includes/class-documents.php',
     'includes/handlers.php'
 );
 
