@@ -117,7 +117,9 @@ class Timeline_Handlers {
                 );
                 // Añadir imagen por defecto
                 $default_image = 'https://www.bebuilt.es/wp-content/uploads/2023/08/cropped-favicon.png';
-                $this->milestones->add_milestone_image($milestone_id, $default_image, 0);
+                $result = $this->milestones->add_milestone_image($milestone_id, $default_image, 0);
+                
+                error_log('✓ Imagen por defecto asignada (EDICIÓN): ' . $default_image . ' - Resultado: ' . ($result ? 'OK' : 'FALLO'));
             }
             
         } else {

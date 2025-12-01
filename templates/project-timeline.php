@@ -419,7 +419,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             transform: translateY(-5px);
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
         }
-        
+
         .milestone-card-image:has(button:disabled) {
             opacity: 0.7;
             cursor: default;
@@ -798,7 +798,13 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             <?php foreach ($milestones as $index => $milestone): ?>
                 <?php
                 $date = new DateTime($milestone->date);
-                $first_image = !empty($milestone->images) ? $milestone->images[0]->image_url : 'https://via.placeholder.com/200x200/cccccc/666666?text=Sin+Imagen';
+                
+                // Asegurar que siempre haya una imagen
+                if (!empty($milestone->images) && isset($milestone->images[0]) && !empty($milestone->images[0]->image_url)) {
+                    $first_image = $milestone->images[0]->image_url;
+                } else {
+                    $first_image = 'https://www.bebuilt.es/wp-content/uploads/2023/08/cropped-favicon.png';
+                }
                 ?>
                 <div class="milestone-card status-<?php echo esc_attr($milestone->status); ?>"
                     style="animation-delay: <?php echo $index * 0.15; ?>s;">
@@ -846,7 +852,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
     <!-- Modal de hito -->
     <div id="milestoneModal" class="modal">
         <div class="modal-content">
-           
+
             <div style="display: flex; gap: 15px; align-items: center; padding: 30px;justify-content: space-between">
                 <div style="display: flex; gap: 15px; align-items: center; padding: 0px;">
                     <div class="modal-date" id="modal-date"></div>
@@ -854,7 +860,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 </div>
                 <span class="modal-close" onclick="closeMilestoneModal()">&times;</span>
             </div>
-            
+
             <div style="display: flex; gap: 15px">
                 <div class="modal-info">
 
@@ -866,10 +872,10 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                     <div class="milestone-nav-arrows">
                         <button class="milestone-nav-btn" id="prev-milestone-btn" onclick="navigateMilestone(-1)">
                             < Anterior
-                        </button>
-                        <button class="milestone-nav-btn" id="next-milestone-btn" onclick="navigateMilestone(1)">
-                            Siguiente >
-                        </button>
+                                </button>
+                                <button class="milestone-nav-btn" id="next-milestone-btn" onclick="navigateMilestone(1)">
+                                    Siguiente >
+                                </button>
                     </div>
                 </div>
 
