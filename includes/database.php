@@ -36,6 +36,7 @@ class Timeline_Database {
             description text,
             featured_image varchar(255),
             status varchar(50) DEFAULT 'activo',
+            project_status varchar(50) DEFAULT 'en_proceso',
             created_by mediumint(9) NOT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

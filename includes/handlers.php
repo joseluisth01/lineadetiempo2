@@ -73,12 +73,14 @@ class Timeline_Handlers {
             $final_milestone_id = $milestone_id;
             
             // Procesar imágenes en modo edición
+            $has_images = false;
+            $db = Timeline_Database::get_instance();
+            
             if (!empty($_POST['images_data'])) {
                 $images_data = json_decode(stripslashes($_POST['images_data']), true);
                 
-                if (is_array($images_data)) {
+                if (is_array($images_data) && count($images_data) > 0) {
                     // Eliminar todas las imágenes antiguas
-                    $db = Timeline_Database::get_instance();
                     $wpdb->delete(
                         $db->get_table_name('milestone_images'),
                         array('milestone_id' => $milestone_id)
@@ -91,17 +93,31 @@ class Timeline_Handlers {
                             if ($image_item['type'] === 'existing' && isset($image_item['url'])) {
                                 // Mantener imagen existente
                                 $this->milestones->add_milestone_image($milestone_id, $image_item['url'], $order);
+                                $has_images = true;
                             } elseif ($image_item['type'] === 'new' && isset($image_item['data'])) {
                                 // Guardar nueva imagen
                                 $image_url = $this->save_base64_image($image_item['data'], 'milestone_' . $milestone_id);
                                 if ($image_url) {
                                     $this->milestones->add_milestone_image($milestone_id, $image_url, $order);
+                                    $has_images = true;
                                 }
                             }
                         }
                         $order++;
                     }
                 }
+            }
+            
+            // Si después de editar no hay imágenes, usar imagen por defecto
+            if (!$has_images) {
+                // Eliminar cualquier imagen antigua
+                $wpdb->delete(
+                    $db->get_table_name('milestone_images'),
+                    array('milestone_id' => $milestone_id)
+                );
+                // Añadir imagen por defecto
+                $default_image = 'https://www.bebuilt.es/wp-content/uploads/2023/08/cropped-favicon.png';
+                $this->milestones->add_milestone_image($milestone_id, $default_image, 0);
             }
             
         } else {
@@ -114,10 +130,17 @@ class Timeline_Handlers {
             }
             
             // Guardar imágenes para nuevo hito
+            $has_images = false;
+            
             if (!empty($_POST['images_data'])) {
                 $images_data = json_decode(stripslashes($_POST['images_data']), true);
                 
-                if (is_array($images_data)) {
+                error_log('=== DEBUG IMÁGENES NUEVO HITO ===');
+                error_log('images_data recibido: ' . $_POST['images_data']);
+                error_log('images_data decoded: ' . print_r($images_data, true));
+                error_log('Count images_data: ' . (is_array($images_data) ? count($images_data) : 'NO ES ARRAY'));
+                
+                if (is_array($images_data) && count($images_data) > 0) {
                     $order = 0;
                     foreach ($images_data as $image_item) {
                         if (isset($image_item['type']) && $image_item['type'] === 'new' && isset($image_item['data'])) {
@@ -125,12 +148,23 @@ class Timeline_Handlers {
                             
                             if ($image_url) {
                                 $this->milestones->add_milestone_image($final_milestone_id, $image_url, $order);
+                                $has_images = true;
+                                error_log('✓ Imagen guardada: ' . $image_url);
                             }
                         }
                         $order++;
                     }
                 }
             }
+            
+            // Si no se guardó ninguna imagen, usar la imagen por defecto
+            if (!$has_images) {
+                $default_image = 'https://www.bebuilt.es/wp-content/uploads/2023/08/cropped-favicon.png';
+                $this->milestones->add_milestone_image($final_milestone_id, $default_image, 0);
+                error_log('✓ Imagen por defecto asignada: ' . $default_image);
+            }
+            
+            error_log('=== FIN DEBUG IMÁGENES ===');
         }
         
         wp_redirect(home_url('/timeline-proyecto-admin/' . $project_id . '?success=saved'));

@@ -320,6 +320,43 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .project-status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+
+        .project-status-badge.en_proceso {
+            background: rgba(253, 196, 37, 0.15);
+            color: #FDC425;
+            border: 1px solid rgba(253, 196, 37, 0.3);
+        }
+
+        .project-status-badge.pendiente {
+            background: rgba(237, 237, 237, 0.1);
+            color: #EDEDED;
+            border: 1px solid rgba(237, 237, 237, 0.2);
+        }
+
+        .project-status-badge.finalizado {
+            background: rgba(255, 222, 136, 0.15);
+            color: #FFDE88;
+            border: 1px solid rgba(255, 222, 136, 0.3);
+        }
+
+        .project-dates {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
     </style>
 </head>
 
@@ -396,10 +433,24 @@
                     <?php
                     $clients = $projects_class->get_project_clients($project->id);
                     $image = $project->featured_image ? $project->featured_image : 'https://via.placeholder.com/400x250/1a1a1a/666666?text=Sin+Imagen';
+
+                    // Mapear estado del proyecto
+                    $status_labels = [
+                        'en_proceso' => 'EN PROCESO',
+                        'pendiente' => 'PENDIENTE',
+                        'finalizado' => 'FINALIZADO'
+                    ];
+
+                    $project_status = isset($project->project_status) ? $project->project_status : 'en_proceso';
+                    $status_label = isset($status_labels[$project_status]) ? $status_labels[$project_status] : 'EN PROCESO';
+                    $status_class = $project_status;
                     ?>
                     <div class="project-card">
                         <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($project->name); ?>" class="project-image">
                         <div class="project-content">
+                            <span class="project-status-badge <?php echo esc_attr($status_class); ?>">
+                                <?php echo esc_html($status_label); ?>
+                            </span>
                             <h3 class="project-title"><?php echo esc_html($project->name); ?></h3>
                             <p class="project-address"><?php echo esc_html($project->address); ?></p>
 

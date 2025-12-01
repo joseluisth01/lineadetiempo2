@@ -38,6 +38,7 @@ class Timeline_Projects {
                 'end_date' => sanitize_text_field($data['end_date']),
                 'description' => sanitize_textarea_field($data['description']),
                 'featured_image' => sanitize_text_field($data['featured_image']),
+                'project_status' => isset($data['project_status']) ? sanitize_text_field($data['project_status']) : 'en_proceso',
                 'created_by' => $user_id
             )
         );
@@ -60,6 +61,12 @@ class Timeline_Projects {
     public function update_project($project_id, $data, $user_id) {
         global $wpdb;
         $table = $this->db->get_table_name('projects');
+        
+        // DEBUG: Ver qué datos llegan
+        error_log('=== UPDATE PROJECT DEBUG ===');
+        error_log('Project ID: ' . $project_id);
+        error_log('Data recibida: ' . print_r($data, true));
+        error_log('Tabla: ' . $table);
         
         $update_data = array();
         
@@ -87,6 +94,15 @@ class Timeline_Projects {
         if (isset($data['status'])) {
             $update_data['status'] = sanitize_text_field($data['status']);
         }
+        if (isset($data['project_status'])) {
+            $update_data['project_status'] = sanitize_text_field($data['project_status']);
+            error_log('✓ project_status detectado: ' . $data['project_status']);
+        } else {
+            error_log('✗ project_status NO está en $data');
+        }
+        
+        // DEBUG: Ver qué se va a actualizar
+        error_log('Update data preparada: ' . print_r($update_data, true));
         
         $result = $wpdb->update(
             $table,
@@ -94,8 +110,18 @@ class Timeline_Projects {
             array('id' => $project_id)
         );
         
+        // DEBUG: Ver resultado de la actualización
+        error_log('Resultado wpdb->update: ' . var_export($result, true));
+        error_log('wpdb->last_error: ' . $wpdb->last_error);
+        error_log('wpdb->last_query: ' . $wpdb->last_query);
+        error_log('=== FIN UPDATE PROJECT DEBUG ===');
+        
         if ($result !== false) {
-            $this->log_activity($user_id, 'update', 'project', $project_id, 'Proyecto actualizado');
+            $milestone = $this->get_project($project_id);
+            
+            $this->log_activity($user_id, 'update', 'project', $project_id, 
+                'Proyecto actualizado');
+            
             return true;
         }
         
@@ -147,14 +173,28 @@ class Timeline_Projects {
         $table_projects = $this->db->get_table_name('projects');
         $table_project_clients = $this->db->get_table_name('project_clients');
         
-        return $wpdb->get_results($wpdb->prepare(
+        $results = $wpdb->get_results($wpdb->prepare(
             "SELECT p.* 
             FROM {$table_projects} p
             INNER JOIN {$table_project_clients} pc ON p.id = pc.project_id
             WHERE pc.client_id = %d
-            ORDER BY p.created_at DESC",
+            ORDER BY 
+                CASE p.project_status
+                    WHEN 'en_proceso' THEN 1
+                    WHEN 'pendiente' THEN 2
+                    WHEN 'finalizado' THEN 3
+                    ELSE 4
+                END,
+                p.created_at DESC",
             $client_id
         ));
+        
+        // DEBUG: Descomentar para ver qué se está obteniendo
+        // foreach ($results as $proj) {
+        //     error_log('Proyecto: ' . $proj->name . ' - project_status en resultado: ' . (isset($proj->project_status) ? $proj->project_status : 'NO EXISTE'));
+        // }
+        
+        return $results;
     }
     
     /**

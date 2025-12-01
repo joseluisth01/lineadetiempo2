@@ -415,6 +415,16 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             transition: all 0.3s;
         }
 
+        .milestone-card-image:not(:has(button:disabled)):hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+        }
+        
+        .milestone-card-image:has(button:disabled) {
+            opacity: 0.7;
+            cursor: default;
+        }
+
         .milestone-card-image:hover {
             transform: translateY(-5px);
             box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
@@ -811,9 +821,15 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
 
                         <div class="milestone-card-image">
                             <img src="<?php echo esc_url($first_image); ?>" alt="<?php echo esc_attr($milestone->title); ?>">
-                            <button class="milestone-card-btn" onclick="openMilestoneModal(<?php echo $index; ?>)">
-                                + Información
-                            </button>
+                            <?php if ($milestone->status !== 'pendiente'): ?>
+                                <button class="milestone-card-btn" onclick="openMilestoneModal(<?php echo $index; ?>)">
+                                    + Información
+                                </button>
+                            <?php else: ?>
+                                <button class="milestone-card-btn" style="background: #666; cursor: not-allowed;" disabled>
+                                    Pendiente
+                                </button>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

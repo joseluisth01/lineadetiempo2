@@ -661,7 +661,12 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
                 });
             });
             
-            document.getElementById('images_data').value = JSON.stringify(allImages);
+            // Solo asignar si hay imágenes, sino dejar vacío para que use la imagen por defecto
+            if (allImages.length > 0) {
+                document.getElementById('images_data').value = JSON.stringify(allImages);
+            } else {
+                document.getElementById('images_data').value = '';
+            }
         }
         
         // Actualizar datos de imágenes antes de enviar el formulario
