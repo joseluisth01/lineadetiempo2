@@ -546,20 +546,53 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             background: #FFDE88;
         }
 
+        /* ===== MODIFICACIÓN: NUEVA BARRA SUPERIOR CON FLECHAS DEL CARRUSEL ===== */
+        .modal-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px;
+            gap: 20px;
+        }
+
+        .modal-top-left {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .modal-top-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            width: 46%;
+            justify-content: space-between;
+        }
+
         .modal-close {
-                padding: 0px;
-    font-size: 26px;
-    color: white;
-    cursor: pointer;
-    z-index: 10;
-    background: black;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    border-radius: 50%;
-    transition: all 0.3s;
-    align-items: center;
-    justify-content: center;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            opacity: 0.8;
+        }
+
+        /* ===== FLECHAS DEL CARRUSEL EN LA BARRA SUPERIOR ===== */
+        .carousel-nav-btn{
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .carousel-nav-btn:hover:not(:disabled) {
+            opacity: 0.8;
+        }
+
+        .carousel-nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
         }
 
 
@@ -569,7 +602,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             height: 500px;
             overflow: hidden;
             padding: 30px;
-            padding-top: 30px;
+            padding-top: 0px;
             border-radius: 20px;
         }
 
@@ -590,33 +623,10 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             border-radius: 20px;
         }
 
+        /* ===== OCULTAR FLECHAS ANTIGUAS DEL CARRUSEL ===== */
         .carousel-prev,
         .carousel-next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            border: none;
-            width: 60px;
-            height: 60px;
-            font-size: 30px;
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 10;
-        }
-
-        .carousel-prev:hover,
-        .carousel-next:hover {
-            background: #000;
-        }
-
-        .carousel-prev {
-            left: 20px;
-        }
-
-        .carousel-next {
-            right: 20px;
+            display: none !important;
         }
 
         .carousel-indicators {
@@ -627,6 +637,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             display: flex;
             gap: 10px;
             z-index: 10;
+            display: none;
         }
 
         .carousel-indicator {
@@ -687,10 +698,11 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             color: #000;
         }
 
+        /* ===== BOTONES DE NAVEGACIÓN ENTRE HITOS (ABAJO COMO ANTES) ===== */
         .milestone-nav-arrows {
             display: flex;
             justify-content: space-between;
-            /* padding: 30px 50px; */
+            padding: 0px;
             bottom: 30px;
             position: absolute;
             width: 50%;
@@ -761,6 +773,17 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             .modal-carousel {
                 height: 300px;
             }
+
+            .modal-top-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            
+            .milestone-nav-arrows {
+                width: 100%;
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -771,10 +794,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         <a href="<?php echo home_url('/timeline-mis-proyectos'); ?>" class="btn-back">← Mis Proyectos</a>
     </nav>
 
-
-    <div class="container">
-        <!-- Barra de Timeline horizontal (superior) -->
-        <div class="timeline-bar-container">
+<div class="timeline-bar-container">
 
             <!-- Flechas laterales (opcionales) -->
             <div class="timeline-nav-arrow timeline-nav-left">‹</div>
@@ -796,6 +816,9 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 <?php endforeach; ?>
             </div>
         </div>
+    <div class="container">
+        <!-- Barra de Timeline horizontal (superior) -->
+        
 
 
         <h1 style="text-align:center"><?php echo esc_html($project->name); ?></h1><br>
@@ -861,22 +884,35 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
     <div id="milestoneModal" class="modal">
         <div class="modal-content">
 
-            <div style="display: flex; gap: 15px; align-items: center; padding: 30px;justify-content: space-between">
-                <div style="display: flex; gap: 15px; align-items: center; padding: 0px;">
+            <!-- ===== BARRA SUPERIOR CON FLECHAS DEL CARRUSEL ===== -->
+            <div class="modal-top-bar">
+                <div class="modal-top-left">
                     <div class="modal-date" id="modal-date"></div>
                     <span class="modal-status" id="modal-status"></span>
                 </div>
-                <span class="modal-close" onclick="closeMilestoneModal()">&times;</span>
+
+                <div class="modal-top-right">
+                    <!-- Flechas del carrusel de imágenes -->
+                    <div style="display:flex; gap:10px">
+                        <button class="carousel-nav-btn" id="carousel-prev-top" onclick="changeSlide(-1)" title="Imagen anterior">
+                            <img src="https://www.bebuilt.es/wp-content/uploads/2025/12/Vector-18.svg" alt="">
+                        </button>
+                        <button class="carousel-nav-btn" id="carousel-next-top" onclick="changeSlide(1)" title="Imagen siguiente">
+                            <img src="https://www.bebuilt.es/wp-content/uploads/2025/12/Vector-19.svg" alt="">
+                        </button>
+                    </div>
+
+                    <!-- Botón cerrar -->
+                    <button class="modal-close" onclick="closeMilestoneModal()"><img src="https://www.bebuilt.es/wp-content/uploads/2025/12/Vector-20.svg" alt=""></button>
+                </div>
             </div>
 
             <div style="display: flex; gap: 15px">
                 <div class="modal-info">
-
-
                     <h2 class="modal-title" id="modal-title"></h2>
-
                     <div class="modal-description" id="modal-description"></div>
 
+                    <!-- Botones de navegación entre hitos (abajo como antes) -->
                     <div class="milestone-nav-arrows">
                         <button class="milestone-nav-btn" id="prev-milestone-btn" onclick="navigateMilestone(-1)">
                             < Anterior
@@ -891,11 +927,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                     <!-- Las imágenes se cargarán dinámicamente -->
                 </div>
             </div>
-
-
-
-
-
         </div>
     </div>
 
@@ -903,6 +934,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         const milestones = <?php echo json_encode($milestones); ?>;
         let currentMilestoneIndex = 0;
         let currentSlide = 0;
+        let totalSlides = 0;
 
         function openMilestoneModal(index) {
             currentMilestoneIndex = index;
@@ -914,7 +946,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
 
             modal.classList.add('active');
 
-            // NUEVO: Añadir clase de estado al modal-content
+            // Añadir clase de estado al modal-content
             modalContent.className = 'modal-content status-' + milestone.status;
 
             // Cargar datos
@@ -940,8 +972,11 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             // Cargar carrusel
             loadCarousel(milestone);
 
-            // Actualizar botones de navegación
-            updateNavButtons();
+            // Actualizar botones de navegación entre hitos
+            updateMilestoneNavButtons();
+
+            // Actualizar botones del carrusel
+            updateCarouselNavButtons();
 
             // Prevenir scroll del body
             document.body.style.overflow = 'hidden';
@@ -961,6 +996,8 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                     image_url: 'https://via.placeholder.com/900x500/cccccc/666666?text=Sin+Imagenes'
                 }];
 
+            totalSlides = images.length;
+
             images.forEach((img, index) => {
                 const slide = document.createElement('div');
                 slide.className = 'carousel-slide' + (index === 0 ? ' active' : '');
@@ -968,21 +1005,8 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 carousel.appendChild(slide);
             });
 
-            // Controles del carrusel
+            // Indicadores
             if (images.length > 1) {
-                const prevBtn = document.createElement('button');
-                prevBtn.className = 'carousel-prev';
-                prevBtn.innerHTML = '‹';
-                prevBtn.onclick = () => changeSlide(-1);
-                carousel.appendChild(prevBtn);
-
-                const nextBtn = document.createElement('button');
-                nextBtn.className = 'carousel-next';
-                nextBtn.innerHTML = '›';
-                nextBtn.onclick = () => changeSlide(1);
-                carousel.appendChild(nextBtn);
-
-                // Indicadores
                 const indicators = document.createElement('div');
                 indicators.className = 'carousel-indicators';
                 images.forEach((_, index) => {
@@ -1006,6 +1030,9 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
 
             slides[currentSlide].classList.add('active');
             if (indicators.length) indicators[currentSlide].classList.add('active');
+
+            // Actualizar estado de los botones del carrusel
+            updateCarouselNavButtons();
         }
 
         function goToSlide(index) {
@@ -1019,27 +1046,86 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
 
             slides[currentSlide].classList.add('active');
             if (indicators.length) indicators[currentSlide].classList.add('active');
+
+            // Actualizar estado de los botones del carrusel
+            updateCarouselNavButtons();
         }
 
+        // ===== ACTUALIZAR BOTONES DEL CARRUSEL =====
+        function updateCarouselNavButtons() {
+            const prevBtn = document.getElementById('carousel-prev-top');
+            const nextBtn = document.getElementById('carousel-next-top');
+
+            // Si solo hay una imagen, ocultar los botones
+            if (totalSlides <= 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'flex';
+                nextBtn.style.display = 'flex';
+
+                // Deshabilitar si estamos en los extremos (opcional)
+                // Si prefieres que haga loop, quita estas líneas
+                prevBtn.disabled = false;
+                nextBtn.disabled = false;
+            }
+        }
+
+        // ===== NAVEGACIÓN ENTRE HITOS (SALTA PENDIENTES) =====
         function navigateMilestone(direction) {
             closeMilestoneModal();
             setTimeout(() => {
-                const newIndex = currentMilestoneIndex + direction;
-                if (newIndex >= 0 && newIndex < milestones.length) {
-                    openMilestoneModal(newIndex);
+                let newIndex = currentMilestoneIndex + direction;
+
+                // Buscar el siguiente hito que NO sea pendiente
+                while (newIndex >= 0 && newIndex < milestones.length) {
+                    if (milestones[newIndex].status !== 'pendiente') {
+                        openMilestoneModal(newIndex);
+                        return;
+                    }
+                    newIndex += direction;
                 }
+
+                // Si no encuentra ninguno válido, no hace nada
             }, 300);
         }
 
-        function updateNavButtons() {
-            document.getElementById('prev-milestone-btn').disabled = currentMilestoneIndex === 0;
-            document.getElementById('next-milestone-btn').disabled = currentMilestoneIndex === milestones.length - 1;
+        function updateMilestoneNavButtons() {
+            // Buscar si hay un hito anterior válido (no pendiente)
+            let hasPrevious = false;
+            for (let i = currentMilestoneIndex - 1; i >= 0; i--) {
+                if (milestones[i].status !== 'pendiente') {
+                    hasPrevious = true;
+                    break;
+                }
+            }
+
+            // Buscar si hay un hito siguiente válido (no pendiente)
+            let hasNext = false;
+            for (let i = currentMilestoneIndex + 1; i < milestones.length; i++) {
+                if (milestones[i].status !== 'pendiente') {
+                    hasNext = true;
+                    break;
+                }
+            }
+
+            // Actualizar botones de navegación entre hitos
+            document.getElementById('prev-milestone-btn').disabled = !hasPrevious;
+            document.getElementById('next-milestone-btn').disabled = !hasNext;
         }
 
         // Cerrar modal con ESC
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeMilestoneModal();
+            }
+            // Navegar por el carrusel con flechas del teclado
+            if (document.getElementById('milestoneModal').classList.contains('active')) {
+                if (e.key === 'ArrowLeft') {
+                    changeSlide(-1);
+                } else if (e.key === 'ArrowRight') {
+                    changeSlide(1);
+                }
             }
         });
 
