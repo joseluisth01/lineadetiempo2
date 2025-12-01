@@ -126,15 +126,36 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             margin: 80px 0;
         }
 
-        /* ===== NUEVA BARRA DE TIMELINE ===== */
+        /* ===== BARRA DE TIMELINE SUPERIOR ===== */
         .timeline-bar-container {
             width: 100%;
-            padding: 20px 0;
+            padding: 0px;
             background: #f2f2f2;
-            position: relative;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            overflow-x: auto;
+            overflow-y: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            scrollbar-width: thin;
+            scrollbar-color: #bfbfbf #f2f2f2;
+        }
+
+        .timeline-bar-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .timeline-bar-container::-webkit-scrollbar-track {
+            background: #f2f2f2;
+        }
+
+        .timeline-bar-container::-webkit-scrollbar-thumb {
+            background: #bfbfbf;
+            border-radius: 4px;
+        }
+
+        .timeline-bar-container::-webkit-scrollbar-thumb:hover {
+            background: #999;
         }
 
         /* Línea horizontal */
@@ -142,121 +163,85 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             position: absolute;
             left: 0;
             right: 0;
-            top: 40px;
-            height: 3px;
-            background: #bfbfbf;
-            z-index: 1;
+            top: 36%;
+            transform: translateY(-50%);
+            height: 2px;
+            background: black;
+            z-index: 99;
         }
 
         /* Contenido scrollable en horizontal */
         .timeline-bar-inner {
             display: flex;
-            width: 100%;
-            justify-content: space-between;
-            padding: 0 40px;
+            gap: 0px;
+            padding: 0 60px;
             position: relative;
             z-index: 2;
+            min-width: max-content;
         }
 
         /* Cada hito superior */
         .timeline-top-item {
             text-align: center;
-            flex: 1;
             position: relative;
-        }
-
-        /* Punto */
-        .timeline-top-point {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: white;
-            border: 3px solid #000;
-            margin: 0 auto;
-            margin-bottom: 6px;
-        }
-
-        /* Fecha */
-        .timeline-top-date {
-            font-size: 12px;
-            color: #555;
-            margin-top: 4px;
-        }
-
-        /* Flechas (opcionales) */
-        .timeline-nav-arrow {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: black;
-            color: white;
-            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            height: 70px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            cursor: pointer;
-            position: absolute;
-            top: 28px;
-            z-index: 3;
+            align-items: center;
+            gap: 5px;
         }
 
-        .timeline-nav-left {
-            left: 5px;
-        }
-
-        .timeline-nav-right {
-            right: 5px;
-        }
+    
 
 
-        .timeline-date-marker {
-            width: 16px;
-            height: 16px;
-            background: #0a0a0a;
-            border: 3px solid #FDC425;
+
+        /* Punto con colores según estado */
+        .timeline-top-point {
+            width: 15px;
+            height: 15px;
             border-radius: 50%;
-            margin: 0 auto 10px;
+            border: 2px solid #000;
+            margin: 0 auto;
+            transition: all 0.3s ease;
         }
 
-        .timeline-date-text {
-            font-size: 11px;
+
+
+
+
+
+        /* Fecha con colores según estado */
+        .timeline-top-date {
+            font-size: 13px;
             font-weight: 600;
-            color: #333;
-            white-space: nowrap;
+            margin-top: 0px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
         }
 
-        /* Hitos en la barra */
-        .milestone-marker {
-            position: absolute;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            cursor: pointer;
-            transition: all 0.3s;
-            z-index: 10;
-        }
-
-        .milestone-marker:hover {
-            transform: translate(-50%, -50%) scale(1.2);
-        }
-
-        .milestone-marker-dot {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 3px solid #0a0a0a;
-            background: #fff;
-        }
-
-        .milestone-marker.status-pendiente .milestone-marker-dot {
+        .timeline-top-item.status-pendiente {
             background: #EDEDED;
         }
 
-        .milestone-marker.status-en_proceso .milestone-marker-dot {
+        .timeline-top-item.status-en_proceso {
             background: #FDC425;
         }
 
-        .milestone-marker.status-finalizado .milestone-marker-dot {
+        .timeline-top-item.status-finalizado {
             background: #FFDE88;
+        }
+
+        .timeline-top-item:hover .timeline-top-date {
+            font-weight: 700;
+        }
+
+        .timeline-top-item.active .timeline-top-date {
+            font-weight: 700;
+            font-size: 14px;
         }
 
         /* LÍNEA VERTICAL DEL TIMELINE */
@@ -360,7 +345,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             top: 50%;
             transform: translateY(-50%);
             width: 40px;
-            /* longitud del conector */
             height: 2px;
             background: black;
             z-index: 4;
@@ -375,7 +359,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         .milestone-card:nth-child(even)::before {
             right: 50%;
         }
-
 
         .status-pendiente .milestone-inner {
             background-color: #EDEDED;
@@ -454,7 +437,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             transition: all 0.3s;
             width: 100%;
         }
-
 
         .milestone-card-content {
             flex: 1;
@@ -537,7 +519,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             border-radius: 40px;
         }
 
-        /* NUEVAS REGLAS - Añadir después de .modal-content */
         .modal-content.status-en_proceso {
             background: #FDC425;
         }
@@ -546,7 +527,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             background: #FFDE88;
         }
 
-        /* ===== MODIFICACIÓN: NUEVA BARRA SUPERIOR CON FLECHAS DEL CARRUSEL ===== */
         .modal-top-bar {
             display: flex;
             justify-content: space-between;
@@ -579,8 +559,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             opacity: 0.8;
         }
 
-        /* ===== FLECHAS DEL CARRUSEL EN LA BARRA SUPERIOR ===== */
-        .carousel-nav-btn{
+        .carousel-nav-btn {
             border: none;
             background: none;
             cursor: pointer;
@@ -594,7 +573,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             opacity: 0.3;
             cursor: not-allowed;
         }
-
 
         .modal-carousel {
             position: relative;
@@ -623,7 +601,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             border-radius: 20px;
         }
 
-        /* ===== OCULTAR FLECHAS ANTIGUAS DEL CARRUSEL ===== */
         .carousel-prev,
         .carousel-next {
             display: none !important;
@@ -686,8 +663,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             border-radius: 10px;
         }
 
-
-
         .modal-description {
             font-size: 16px;
             line-height: 1.8;
@@ -699,7 +674,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             color: #000;
         }
 
-        /* ===== BOTONES DE NAVEGACIÓN ENTRE HITOS (ABAJO COMO ANTES) ===== */
         .milestone-nav-arrows {
             display: flex;
             justify-content: space-between;
@@ -771,17 +745,20 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 padding: 30px;
             }
 
-            
-
             .modal-top-bar {
                 flex-direction: column;
                 align-items: stretch;
             }
 
-            
             .milestone-nav-arrows {
                 width: 100%;
                 padding: 20px;
+            }
+
+
+
+            .timeline-top-item {
+                min-width: 80px;
             }
         }
     </style>
@@ -793,38 +770,31 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         <a href="<?php echo home_url('/timeline-mis-proyectos'); ?>" class="btn-back">← Mis Proyectos</a>
     </nav>
 
-<div class="timeline-bar-container">
-
-            <!-- Flechas laterales (opcionales) -->
-            <div class="timeline-nav-arrow timeline-nav-left">‹</div>
-            <div class="timeline-nav-arrow timeline-nav-right">›</div>
-
-            <div class="timeline-bar"></div>
-
-            <div class="timeline-bar-inner">
-                <?php foreach ($milestones as $milestone): ?>
-                    <?php $date = new DateTime($milestone->date); ?>
-                    <div class="timeline-top-item">
-
-                        <div class="timeline-top-point status-<?php echo esc_attr($milestone->status); ?>"></div>
-
-                        <div class="timeline-top-date">
-                            <?php echo $date->format('d/m/Y'); ?>
-                        </div>
+    <div class="timeline-bar-container" id="timelineBarContainer">
+        <div class="timeline-bar"></div>
+        <div class="timeline-bar-inner" id="timelineBarInner">
+            <?php foreach ($milestones as $index => $milestone): ?>
+                <?php
+                $date = new DateTime($milestone->date);
+                $status_class = 'status-' . esc_attr($milestone->status);
+                ?>
+                <div class="timeline-top-item <?php echo $status_class; ?>"
+                    data-milestone-index="<?php echo $index; ?>"
+                    onclick="scrollToMilestone(<?php echo $index; ?>)">
+                    <div class="timeline-top-point"></div>
+                    <div class="timeline-top-date">
+                        <?php echo $date->format('d/m/Y'); ?>
                     </div>
-                <?php endforeach; ?>
-            </div>
+                </div>
+            <?php endforeach; ?>
         </div>
+    </div>
+
     <div class="container">
-        <!-- Barra de Timeline horizontal (superior) -->
-        
-
-
         <h1 style="text-align:center"><?php echo esc_html($project->name); ?></h1><br>
         <p style="text-align:center"><?php echo esc_html($project->description); ?></p><br>
 
-        <!-- Timeline vertical con hitos -->
-        <div class="vertical-timeline">
+        <div class="vertical-timeline" id="verticalTimeline">
             <?php foreach ($milestones as $index => $milestone): ?>
                 <?php
                 $date = new DateTime($milestone->date);
@@ -837,6 +807,8 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 }
                 ?>
                 <div class="milestone-card status-<?php echo esc_attr($milestone->status); ?>"
+                    id="milestone-<?php echo $index; ?>"
+                    data-milestone-index="<?php echo $index; ?>"
                     style="animation-delay: <?php echo $index * 0.15; ?>s;">
                     <div class="milestone-inner">
 
@@ -883,7 +855,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
     <div id="milestoneModal" class="modal">
         <div class="modal-content">
 
-            <!-- ===== BARRA SUPERIOR CON FLECHAS DEL CARRUSEL ===== -->
             <div class="modal-top-bar">
                 <div class="modal-top-left">
                     <div class="modal-date" id="modal-date"></div>
@@ -891,7 +862,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 </div>
 
                 <div class="modal-top-right">
-                    <!-- Flechas del carrusel de imágenes -->
                     <div style="display:flex; gap:10px; justify-content: space-between;">
                         <button class="carousel-nav-btn" id="carousel-prev-top" onclick="changeSlide(-1)" title="Imagen anterior">
                             <img src="https://www.bebuilt.es/wp-content/uploads/2025/12/Vector-18.svg" alt="">
@@ -901,7 +871,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                         </button>
                     </div>
 
-                    <!-- Botón cerrar -->
                     <button class="modal-close" onclick="closeMilestoneModal()"><img src="https://www.bebuilt.es/wp-content/uploads/2025/12/Vector-20.svg" alt=""></button>
                 </div>
             </div>
@@ -911,7 +880,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                     <h2 class="modal-title" id="modal-title"></h2>
                     <div class="modal-description" id="modal-description"></div>
 
-                    <!-- Botones de navegación entre hitos (abajo como antes) -->
                     <div class="milestone-nav-arrows">
                         <button class="milestone-nav-btn" id="prev-milestone-btn" onclick="navigateMilestone(-1)">
                             < Anterior
@@ -934,6 +902,99 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         let currentMilestoneIndex = 0;
         let currentSlide = 0;
         let totalSlides = 0;
+        let isScrolling = false;
+
+        // ===== NUEVA FUNCIÓN: SCROLL AL HITO CORRESPONDIENTE =====
+        function scrollToMilestone(index) {
+            const milestoneCard = document.getElementById('milestone-' + index);
+            if (milestoneCard) {
+                // Desactivar el scroll sincronizado temporalmente
+                isScrolling = true;
+
+                milestoneCard.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+
+                // Reactivar después de 1 segundo
+                setTimeout(() => {
+                    isScrolling = false;
+                }, 1000);
+            }
+        }
+
+        // ===== NUEVA FUNCIÓN: SINCRONIZACIÓN DEL SCROLL =====
+        function setupScrollSync() {
+            const verticalTimeline = document.getElementById('verticalTimeline');
+            const timelineBarInner = document.getElementById('timelineBarInner');
+            const milestoneCards = document.querySelectorAll('.milestone-card');
+
+            if (!verticalTimeline || !timelineBarInner || milestoneCards.length === 0) {
+                return;
+            }
+
+            let ticking = false;
+
+            window.addEventListener('scroll', function() {
+                if (isScrolling) return; // No sincronizar si estamos haciendo scroll programático
+
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        updateTimelinePosition();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+
+            function updateTimelinePosition() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const windowHeight = window.innerHeight;
+                const timelineStart = verticalTimeline.offsetTop;
+                const timelineHeight = verticalTimeline.offsetHeight;
+
+                // Calcular qué hito está más cerca del centro de la pantalla
+                let closestIndex = 0;
+                let closestDistance = Infinity;
+
+                milestoneCards.forEach((card, index) => {
+                    const cardTop = card.offsetTop;
+                    const cardCenter = cardTop + (card.offsetHeight / 2);
+                    const screenCenter = scrollTop + (windowHeight / 2);
+                    const distance = Math.abs(cardCenter - screenCenter);
+
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        closestIndex = index;
+                    }
+                });
+
+                // Desplazar la barra horizontal para centrar el hito correspondiente
+                const timelineItems = timelineBarInner.querySelectorAll('.timeline-top-item');
+                if (timelineItems[closestIndex]) {
+                    const itemLeft = timelineItems[closestIndex].offsetLeft;
+                    const itemWidth = timelineItems[closestIndex].offsetWidth;
+                    const containerWidth = timelineBarInner.parentElement.offsetWidth;
+
+                    // Calcular el scroll para centrar el item
+                    const scrollLeft = itemLeft - (containerWidth / 2) + (itemWidth / 2);
+
+                    timelineBarInner.parentElement.scrollTo({
+                        left: scrollLeft,
+                        behavior: 'smooth'
+                    });
+
+                    // Destacar el item activo
+                    timelineItems.forEach((item, idx) => {
+                        if (idx === closestIndex) {
+                            item.classList.add('active');
+                        } else {
+                            item.classList.remove('active');
+                        }
+                    });
+                }
+            }
+        }
 
         function openMilestoneModal(index) {
             currentMilestoneIndex = index;
@@ -945,10 +1006,8 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
 
             modal.classList.add('active');
 
-            // Añadir clase de estado al modal-content
             modalContent.className = 'modal-content status-' + milestone.status;
 
-            // Cargar datos
             const date = new Date(milestone.date);
             document.getElementById('modal-date').textContent = date.toLocaleDateString('es-ES', {
                 day: '2-digit',
@@ -958,7 +1017,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             document.getElementById('modal-title').textContent = milestone.title;
             document.getElementById('modal-description').innerHTML = milestone.description.replace(/\n/g, '<br>');
 
-            // Estado
             const statusElement = document.getElementById('modal-status');
             const statusLabels = {
                 'pendiente': 'Pendiente',
@@ -968,16 +1026,10 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             statusElement.textContent = statusLabels[milestone.status] || milestone.status;
             statusElement.className = 'modal-status status-' + milestone.status;
 
-            // Cargar carrusel
             loadCarousel(milestone);
-
-            // Actualizar botones de navegación entre hitos
             updateMilestoneNavButtons();
-
-            // Actualizar botones del carrusel
             updateCarouselNavButtons();
 
-            // Prevenir scroll del body
             document.body.style.overflow = 'hidden';
         }
 
@@ -1004,7 +1056,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 carousel.appendChild(slide);
             });
 
-            // Indicadores
             if (images.length > 1) {
                 const indicators = document.createElement('div');
                 indicators.className = 'carousel-indicators';
@@ -1030,7 +1081,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             slides[currentSlide].classList.add('active');
             if (indicators.length) indicators[currentSlide].classList.add('active');
 
-            // Actualizar estado de los botones del carrusel
             updateCarouselNavButtons();
         }
 
@@ -1046,37 +1096,29 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             slides[currentSlide].classList.add('active');
             if (indicators.length) indicators[currentSlide].classList.add('active');
 
-            // Actualizar estado de los botones del carrusel
             updateCarouselNavButtons();
         }
 
-        // ===== ACTUALIZAR BOTONES DEL CARRUSEL =====
         function updateCarouselNavButtons() {
             const prevBtn = document.getElementById('carousel-prev-top');
             const nextBtn = document.getElementById('carousel-next-top');
 
-            // Si solo hay una imagen, ocultar los botones
             if (totalSlides <= 1) {
                 prevBtn.style.display = 'none';
                 nextBtn.style.display = 'none';
             } else {
                 prevBtn.style.display = 'flex';
                 nextBtn.style.display = 'flex';
-
-                // Deshabilitar si estamos en los extremos (opcional)
-                // Si prefieres que haga loop, quita estas líneas
                 prevBtn.disabled = false;
                 nextBtn.disabled = false;
             }
         }
 
-        // ===== NAVEGACIÓN ENTRE HITOS (SALTA PENDIENTES) =====
         function navigateMilestone(direction) {
             closeMilestoneModal();
             setTimeout(() => {
                 let newIndex = currentMilestoneIndex + direction;
 
-                // Buscar el siguiente hito que NO sea pendiente
                 while (newIndex >= 0 && newIndex < milestones.length) {
                     if (milestones[newIndex].status !== 'pendiente') {
                         openMilestoneModal(newIndex);
@@ -1084,13 +1126,10 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                     }
                     newIndex += direction;
                 }
-
-                // Si no encuentra ninguno válido, no hace nada
             }, 300);
         }
 
         function updateMilestoneNavButtons() {
-            // Buscar si hay un hito anterior válido (no pendiente)
             let hasPrevious = false;
             for (let i = currentMilestoneIndex - 1; i >= 0; i--) {
                 if (milestones[i].status !== 'pendiente') {
@@ -1099,7 +1138,6 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 }
             }
 
-            // Buscar si hay un hito siguiente válido (no pendiente)
             let hasNext = false;
             for (let i = currentMilestoneIndex + 1; i < milestones.length; i++) {
                 if (milestones[i].status !== 'pendiente') {
@@ -1108,17 +1146,14 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 }
             }
 
-            // Actualizar botones de navegación entre hitos
             document.getElementById('prev-milestone-btn').disabled = !hasPrevious;
             document.getElementById('next-milestone-btn').disabled = !hasNext;
         }
 
-        // Cerrar modal con ESC
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeMilestoneModal();
             }
-            // Navegar por el carrusel con flechas del teclado
             if (document.getElementById('milestoneModal').classList.contains('active')) {
                 if (e.key === 'ArrowLeft') {
                     changeSlide(-1);
@@ -1128,13 +1163,17 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             }
         });
 
-        // Cerrar modal al hacer clic fuera
         window.onclick = function(event) {
             const modal = document.getElementById('milestoneModal');
             if (event.target == modal) {
                 closeMilestoneModal();
             }
         }
+
+        // Inicializar la sincronización del scroll cuando cargue la página
+        document.addEventListener('DOMContentLoaded', function() {
+            setupScrollSync();
+        });
     </script>
 </body>
 
