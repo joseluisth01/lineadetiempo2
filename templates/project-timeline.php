@@ -598,7 +598,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
 
         .modal-carousel {
             position: relative;
-            width: 100%;
+            width: 48%;
             height: 500px;
             overflow: hidden;
             padding: 30px;
@@ -657,6 +657,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         .modal-info {
             padding: 30px;
             padding-top: 0px;
+            width: 50%;
         }
 
         .modal-date {
@@ -770,9 +771,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 padding: 30px;
             }
 
-            .modal-carousel {
-                height: 300px;
-            }
+            
 
             .modal-top-bar {
                 flex-direction: column;
@@ -893,7 +892,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
 
                 <div class="modal-top-right">
                     <!-- Flechas del carrusel de imágenes -->
-                    <div style="display:flex; gap:10px">
+                    <div style="display:flex; gap:10px; justify-content: space-between;">
                         <button class="carousel-nav-btn" id="carousel-prev-top" onclick="changeSlide(-1)" title="Imagen anterior">
                             <img src="https://www.bebuilt.es/wp-content/uploads/2025/12/Vector-18.svg" alt="">
                         </button>
@@ -907,7 +906,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 </div>
             </div>
 
-            <div style="display: flex; gap: 15px">
+            <div style="display: flex; gap: 15px; justify-content:space-between;">
                 <div class="modal-info">
                     <h2 class="modal-title" id="modal-title"></h2>
                     <div class="modal-description" id="modal-description"></div>
