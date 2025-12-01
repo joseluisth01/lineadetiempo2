@@ -537,20 +537,29 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             border-radius: 40px;
         }
 
+        /* NUEVAS REGLAS - Añadir después de .modal-content */
+        .modal-content.status-en_proceso {
+            background: #FDC425;
+        }
+
+        .modal-content.status-finalizado {
+            background: #FFDE88;
+        }
+
         .modal-close {
-            padding: 30px;
-            font-size: 40px;
-            color: #000;
-            cursor: pointer;
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.9);
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s;
+                padding: 0px;
+    font-size: 26px;
+    color: white;
+    cursor: pointer;
+    z-index: 10;
+    background: black;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    border-radius: 50%;
+    transition: all 0.3s;
+    align-items: center;
+    justify-content: center;
         }
 
 
@@ -670,7 +679,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         .modal-description {
             font-size: 16px;
             line-height: 1.8;
-            color: #666;
+            color: black;
         }
 
         .modal-description strong {
@@ -702,8 +711,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         }
 
         .milestone-nav-btn:hover:not(:disabled) {
-            background: #FDC425;
-            color: #000;
+            opacity: 0.8;
         }
 
         .milestone-nav-btn:disabled {
@@ -798,7 +806,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             <?php foreach ($milestones as $index => $milestone): ?>
                 <?php
                 $date = new DateTime($milestone->date);
-                
+
                 // Asegurar que siempre haya una imagen
                 if (!empty($milestone->images) && isset($milestone->images[0]) && !empty($milestone->images[0]->image_url)) {
                     $first_image = $milestone->images[0]->image_url;
@@ -901,7 +909,13 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             currentSlide = 0;
             const milestone = milestones[index];
 
-            document.getElementById('milestoneModal').classList.add('active');
+            const modal = document.getElementById('milestoneModal');
+            const modalContent = modal.querySelector('.modal-content');
+
+            modal.classList.add('active');
+
+            // NUEVO: Añadir clase de estado al modal-content
+            modalContent.className = 'modal-content status-' + milestone.status;
 
             // Cargar datos
             const date = new Date(milestone.date);
