@@ -158,6 +158,7 @@ class Timeline_Plugin
         add_rewrite_rule('^timeline-proyecto-editar/([0-9]+)/?$', 'index.php?timeline_page=project_edit&timeline_id=$matches[1]', 'top');
         add_rewrite_rule('^timeline-proyecto/([0-9]+)/?$', 'index.php?timeline_page=project_view&timeline_id=$matches[1]', 'top');
         add_rewrite_rule('^timeline-proyecto-admin/([0-9]+)/?$', 'index.php?timeline_page=project_admin&timeline_id=$matches[1]', 'top');
+        add_rewrite_rule('^timeline-documentos/([0-9]+)/?$', 'index.php?timeline_page=project_documents&timeline_id=$matches[1]', 'top');
     }
 
     /**
@@ -366,6 +367,27 @@ class Timeline_Plugin
 
                 // Cargar la vista de administración del timeline
                 $this->load_template_admin('project-timeline-admin');
+                break;
+
+            case 'project_documents':
+                if (!$this->is_logged_in()) {
+                    wp_redirect(home_url('/login-proyectos'));
+                    exit;
+                }
+                $current_user = $this->get_current_user();
+
+                if (!$this->can_manage_projects($current_user)) {
+                    wp_redirect(home_url('/timeline-dashboard'));
+                    exit;
+                }
+
+                $project_id = get_query_var('timeline_id');
+                if (!$project_id) {
+                    wp_redirect(home_url('/timeline-proyectos'));
+                    exit;
+                }
+
+                $this->load_template_admin('project-documents');
                 break;
         }
     }

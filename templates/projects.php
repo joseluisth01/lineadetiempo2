@@ -483,9 +483,9 @@
                                 <?php $client_ids_str = 'none'; ?>
                             <?php endif; ?>
 
-                            <!-- AQUÍ ESTÁ EL CÓDIGO QUE DEBES CAMBIAR -->
                             <div class="project-actions">
-                                <a href="<?php echo home_url('/timeline-proyecto-admin/' . $project->id); ?>" class="btn-small">Gestionar Timeline</a>
+                                <a href="<?php echo home_url('/timeline-proyecto-admin/' . $project->id); ?>" class="btn-small">Timeline</a>
+                                <a href="<?php echo home_url('/timeline-documentos/' . $project->id); ?>" class="btn-small">Documentos</a>
                                 <a href="<?php echo home_url('/timeline-proyecto-editar/' . $project->id); ?>" class="btn-small">Editar</a>
                             </div>
                         </div>

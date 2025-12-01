@@ -875,6 +875,51 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         <?php endif; ?>
     </div>
 
+
+    <?php
+$documents_class = Timeline_Documents::get_instance();
+$documents = $documents_class->get_project_documents($project_id);
+
+if (count($documents) > 0):
+?>
+<div style="background: rgba(0, 0, 0, 0.03); padding: 80px 0; margin-top: 100px;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 40px;">
+        <h2 style="text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 15px;">
+            Descarga <span style="font-weight: 400;">cualquiera de los documentos</span> del proyecto
+        </h2>
+        <p style="text-align: center; color: #666; margin-bottom: 60px; font-size: 16px;">
+            Aquí tienes disponibles todos los documentos importantes relacionados con tu obra
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 40px; justify-items: center;">
+            <?php foreach ($documents as $doc): ?>
+                <?php
+                // Iconos según tipo de archivo
+                $icon_url = 'https://www.bebuilt.es/wp-content/uploads/2025/12/download-icon.svg'; // Icono por defecto
+                
+                // Puedes personalizar iconos según el tipo de archivo si lo deseas
+                ?>
+                <a href="<?php echo esc_url($doc->file_url); ?>" 
+                   download 
+                   target="_blank"
+                   style="text-decoration: none; text-align: center; transition: transform 0.3s;"
+                   onmouseover="this.style.transform='translateY(-5px)'"
+                   onmouseout="this.style.transform='translateY(0)'">
+                    <div style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid #000; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; background: #fff;">
+                        <img src="<?php echo $icon_url; ?>" alt="Descargar" style="width: 50px; height: 50px;">
+                    </div>
+                    <div style="color: #000; font-size: 14px; font-weight: 600; max-width: 180px; word-wrap: break-word;">
+                        <?php echo esc_html($doc->title); ?>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if (count($milestones) === 0): ?>
+
     <!-- Modal de hito -->
     <div id="milestoneModal" class="modal">
         <div class="modal-content">
@@ -920,6 +965,8 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             </div>
         </div>
     </div>
+
+    
 
     <script>
         const milestones = <?php echo json_encode($milestones); ?>;
@@ -992,71 +1039,71 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             });
 
             function updateTimelinePosition() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const windowHeight = window.innerHeight;
-    const timelineStart = verticalTimeline.offsetTop;
-    
-    // Punto de referencia: 1/3 desde arriba de la pantalla
-    const detectionPoint = scrollTop + (windowHeight / 3);
-    
-    let closestIndex = 0;
-    let closestDistance = Infinity;
-    
-    // Si estamos antes del timeline, activar el primero
-    if (scrollTop < timelineStart - 200) {
-        closestIndex = 0;
-    } else {
-        // Buscar el hito cuyo centro esté más cerca del punto de detección
-        milestoneCards.forEach((card, index) => {
-            const cardTop = card.offsetTop;
-            const cardHeight = card.offsetHeight;
-            const cardCenter = cardTop + (cardHeight / 2);
-            
-            // Calcular distancia al punto de detección
-            const distance = Math.abs(cardCenter - detectionPoint);
-            
-            // Si este hito está más cerca que el anterior, actualizarlo
-            if (distance < closestDistance) {
-                closestDistance = distance;
-                closestIndex = index;
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const windowHeight = window.innerHeight;
+                const timelineStart = verticalTimeline.offsetTop;
+
+                // Punto de referencia: 1/3 desde arriba de la pantalla
+                const detectionPoint = scrollTop + (windowHeight / 3);
+
+                let closestIndex = 0;
+                let closestDistance = Infinity;
+
+                // Si estamos antes del timeline, activar el primero
+                if (scrollTop < timelineStart - 200) {
+                    closestIndex = 0;
+                } else {
+                    // Buscar el hito cuyo centro esté más cerca del punto de detección
+                    milestoneCards.forEach((card, index) => {
+                        const cardTop = card.offsetTop;
+                        const cardHeight = card.offsetHeight;
+                        const cardCenter = cardTop + (cardHeight / 2);
+
+                        // Calcular distancia al punto de detección
+                        const distance = Math.abs(cardCenter - detectionPoint);
+
+                        // Si este hito está más cerca que el anterior, actualizarlo
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            closestIndex = index;
+                        }
+                    });
+                }
+
+                // Desplazar la barra horizontal para centrar el hito correspondiente
+                const timelineItems = timelineBarInner.querySelectorAll('.timeline-top-item');
+                if (timelineItems[closestIndex]) {
+                    const itemLeft = timelineItems[closestIndex].offsetLeft;
+                    const itemWidth = timelineItems[closestIndex].offsetWidth;
+                    const containerWidth = timelineBarInner.parentElement.offsetWidth;
+
+                    // Calcular el scroll para centrar el item
+                    const scrollLeft = itemLeft - (containerWidth / 2) + (itemWidth / 2);
+
+                    timelineBarInner.parentElement.scrollTo({
+                        left: scrollLeft,
+                        behavior: 'smooth'
+                    });
+
+                    // Destacar el item activo en la barra superior
+                    timelineItems.forEach((item, idx) => {
+                        if (idx === closestIndex) {
+                            item.classList.add('active');
+                        } else {
+                            item.classList.remove('active');
+                        }
+                    });
+
+                    // Destacar también el milestone-card activo
+                    milestoneCards.forEach((card, idx) => {
+                        if (idx === closestIndex) {
+                            card.classList.add('active');
+                        } else {
+                            card.classList.remove('active');
+                        }
+                    });
+                }
             }
-        });
-    }
-    
-    // Desplazar la barra horizontal para centrar el hito correspondiente
-    const timelineItems = timelineBarInner.querySelectorAll('.timeline-top-item');
-    if (timelineItems[closestIndex]) {
-        const itemLeft = timelineItems[closestIndex].offsetLeft;
-        const itemWidth = timelineItems[closestIndex].offsetWidth;
-        const containerWidth = timelineBarInner.parentElement.offsetWidth;
-        
-        // Calcular el scroll para centrar el item
-        const scrollLeft = itemLeft - (containerWidth / 2) + (itemWidth / 2);
-        
-        timelineBarInner.parentElement.scrollTo({
-            left: scrollLeft,
-            behavior: 'smooth'
-        });
-        
-        // Destacar el item activo en la barra superior
-        timelineItems.forEach((item, idx) => {
-            if (idx === closestIndex) {
-                item.classList.add('active');
-            } else {
-                item.classList.remove('active');
-            }
-        });
-        
-        // Destacar también el milestone-card activo
-        milestoneCards.forEach((card, idx) => {
-            if (idx === closestIndex) {
-                card.classList.add('active');
-            } else {
-                card.classList.remove('active');
-            }
-        });
-    }
-}
 
         }
 
