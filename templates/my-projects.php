@@ -131,7 +131,7 @@
         
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(1fr, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(28%, 1fr));
             gap: 40px;
         }
         
@@ -175,7 +175,6 @@
         
         .project-content {
             background: #fff;
-            padding: 30px;
             text-align: center;
         }
         
@@ -184,6 +183,7 @@
             font-weight: bold;
             color: #000;
             margin-bottom: 30px;
+            margin-top: 20px;
             line-height: 1.3;
             text-align: center;
         }
@@ -201,7 +201,7 @@
             transition: all 0.3s;
             border: none;
             cursor: pointer;
-            width: 30%;
+            width: 100%;
             text-align: center;
             margin: 0 auto;
             border-radius: 10px;

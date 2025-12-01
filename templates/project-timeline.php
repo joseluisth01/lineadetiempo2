@@ -116,7 +116,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 80%;
             margin: 0 auto;
             padding: 80px 40px;
         }
@@ -126,30 +126,88 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             margin: 80px 0;
         }
 
-        /* Barra de timeline horizontal */
+        /* ===== NUEVA BARRA DE TIMELINE ===== */
         .timeline-bar-container {
+            width: 100%;
+            padding: 20px 0;
+            background: #f2f2f2;
             position: relative;
-            height: 120px;
-            margin-bottom: 50px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
         }
 
+        /* Línea horizontal */
         .timeline-bar {
             position: absolute;
-            top: 50%;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(to right, #FDC425 0%, #FDC425 <?php echo $is_extended ? (($end->diff($start)->days / $total_days) * 100) : 100; ?>%, #ff6b6b <?php echo $is_extended ? (($end->diff($start)->days / $total_days) * 100) : 100; ?>%, #ff6b6b 100%);
-            transform: translateY(-50%);
+            top: 40px;
+            height: 3px;
+            background: #bfbfbf;
+            z-index: 1;
         }
 
-        /* Fechas en la barra */
-        .timeline-date {
-            position: absolute;
-            top: -40px;
-            transform: translateX(-50%);
-            text-align: center;
+        /* Contenido scrollable en horizontal */
+        .timeline-bar-inner {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            padding: 0 40px;
+            position: relative;
+            z-index: 2;
         }
+
+        /* Cada hito superior */
+        .timeline-top-item {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Punto */
+        .timeline-top-point {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #000;
+            margin: 0 auto;
+            margin-bottom: 6px;
+        }
+
+        /* Fecha */
+        .timeline-top-date {
+            font-size: 12px;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        /* Flechas (opcionales) */
+        .timeline-nav-arrow {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: black;
+            color: white;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: absolute;
+            top: 28px;
+            z-index: 3;
+        }
+
+        .timeline-nav-left {
+            left: 5px;
+        }
+
+        .timeline-nav-right {
+            right: 5px;
+        }
+
 
         .timeline-date-marker {
             width: 16px;
@@ -232,14 +290,13 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
 
         /* Alternar posición - Hitos impares a la DERECHA */
         .milestone-card:nth-child(odd) {
-            justify-content: flex-end;
-            padding-left: calc(50% + 40px);
+            padding-left: calc(50% + 25px);
         }
 
         /* Alternar posición - Hitos pares a la IZQUIERDA */
         .milestone-card:nth-child(even) {
-            justify-content: flex-start;
-            padding-right: calc(50% + 40px);
+            justify-content: flex-end;
+            padding-right: calc(50% + 25px);
         }
 
         /* Contenedor interno del hito */
@@ -254,9 +311,10 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             max-width: 650px;
             width: 100%;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 999999;
         }
 
-        .status-finalizado .milestone-inner{
+        .status-finalizado .milestone-inner {
             background-color: #FFDE88;
         }
 
@@ -272,25 +330,58 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             text-align: right;
         }
 
-        /* Punto de conexión en la línea central */
         .milestone-card::after {
             content: '';
             position: absolute;
-            left: 50%;
-            top: 20%;
+            top: 50%;
             transform: translate(-50%, -50%);
             width: 18px;
             height: 18px;
             border-radius: 50%;
-            background: black;
-            box-shadow: 0 0 0 2px black;
-            z-index: 5;
+            background: #FDC425;
+            border: 3px solid black;
+            z-index: 6;
         }
 
-        .status-pendiente .milestone-inner{
+        /* Impares (derecha) → punto se coloca centrado respecto a la línea */
+        .milestone-card:nth-child(odd)::after {
+            left: 50%;
+        }
+
+        /* Pares (izquierda) */
+        .milestone-card:nth-child(even)::after {
+            left: 50%;
+        }
+
+        /* ===== CONECTOR: LÍNEA QUE SALE DEL PUNTO HACIA LA TARJETA ===== */
+        .milestone-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            /* longitud del conector */
+            height: 2px;
+            background: black;
+            z-index: 4;
+        }
+
+        /* Impares → tarjeta a la DERECHA → línea a la izquierda */
+        .milestone-card:nth-child(odd)::before {
+            left: 50%;
+        }
+
+        /* Pares → tarjeta a la IZQUIERDA → línea a la derecha */
+        .milestone-card:nth-child(even)::before {
+            right: 50%;
+        }
+
+
+        .status-pendiente .milestone-inner {
             background-color: #EDEDED;
         }
-        .status-en_proceso .milestone-inner{
+
+        .status-en_proceso .milestone-inner {
             background-color: #FDC425;
         }
 
@@ -368,10 +459,11 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             flex-wrap: wrap;
         }
 
-        .milestone-card:nth-child(even) .milestone-card-content .milestone-card-date{
+        .milestone-card:nth-child(even) .milestone-card-content .milestone-card-date {
             order: 2;
         }
-        .milestone-card:nth-child(even) .milestone-card-content .milestone-card-date{
+
+        .milestone-card:nth-child(even) .milestone-card-content .milestone-card-date {
             order: 1;
         }
 
@@ -427,18 +519,16 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         .modal-content {
             background: #ffffff;
             width: 90%;
-            max-width: 900px;
+            max-width: 90%;
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
             margin: 40px 0;
-            border-radius: 10px;
+            border-radius: 40px;
         }
 
         .modal-close {
-            position: absolute;
-            top: 30px;
-            right: 30px;
+            padding: 30px;
             font-size: 40px;
             color: #000;
             cursor: pointer;
@@ -453,17 +543,15 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             transition: all 0.3s;
         }
 
-        .modal-close:hover {
-            background: #000;
-            color: #fff;
-        }
 
         .modal-carousel {
             position: relative;
             width: 100%;
             height: 500px;
             overflow: hidden;
-            background: #f5f5f5;
+            padding: 30px;
+            padding-top: 30px;
+            border-radius: 20px;
         }
 
         .carousel-slide {
@@ -480,6 +568,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 20px;
         }
 
         .carousel-prev,
@@ -536,13 +625,13 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         }
 
         .modal-info {
-            padding: 50px;
+            padding: 30px;
+            padding-top: 0px;
         }
 
         .modal-date {
             font-size: 14px;
-            color: #999;
-            margin-bottom: 15px;
+            color: black;
             font-weight: 500;
         }
 
@@ -560,8 +649,10 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            margin-bottom: 30px;
             border-radius: 5px;
+            background-color: black;
+            color: #FDC425;
+            border-radius: 10px;
         }
 
 
@@ -580,8 +671,10 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         .milestone-nav-arrows {
             display: flex;
             justify-content: space-between;
-            padding: 30px 50px;
-            border-top: 1px solid #e0e0e0;
+            /* padding: 30px 50px; */
+            bottom: 30px;
+            position: absolute;
+            width: 50%;
         }
 
         .milestone-nav-btn {
@@ -595,6 +688,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 600;
+            border-radius: 10px;
         }
 
         .milestone-nav-btn:hover:not(:disabled) {
@@ -663,43 +757,28 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
     <div class="container">
         <!-- Barra de Timeline horizontal (superior) -->
         <div class="timeline-bar-container">
+
+            <!-- Flechas laterales (opcionales) -->
+            <div class="timeline-nav-arrow timeline-nav-left">‹</div>
+            <div class="timeline-nav-arrow timeline-nav-right">›</div>
+
             <div class="timeline-bar"></div>
 
-            <!-- Fecha inicio -->
-            <div class="timeline-date" style="left: 0;">
-                <div class="timeline-date-marker"></div>
-                <div class="timeline-date-text"><?php echo $start->format('d/m/Y'); ?></div>
+            <div class="timeline-bar-inner">
+                <?php foreach ($milestones as $milestone): ?>
+                    <?php $date = new DateTime($milestone->date); ?>
+                    <div class="timeline-top-item">
+
+                        <div class="timeline-top-point status-<?php echo esc_attr($milestone->status); ?>"></div>
+
+                        <div class="timeline-top-date">
+                            <?php echo $date->format('d/m/Y'); ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
-
-            <!-- Fecha fin prevista -->
-            <div class="timeline-date" style="left: <?php echo $is_extended ? (($end->diff($start)->days / $total_days) * 100) : 100; ?>%;">
-                <div class="timeline-date-marker" style="border-color: <?php echo $is_extended ? '#ff6b6b' : '#FDC425'; ?>;"></div>
-                <div class="timeline-date-text"><?php echo $end->format('d/m/Y'); ?></div>
-            </div>
-
-            <?php if ($is_extended): ?>
-                <!-- Fecha fin real (extendida) -->
-                <div class="timeline-date" style="left: 100%;">
-                    <div class="timeline-date-marker" style="border-color: #ff6b6b;"></div>
-                    <div class="timeline-date-text"><?php echo $actual_end->format('d/m/Y'); ?></div>
-                </div>
-            <?php endif; ?>
-
-            <!-- Marcadores de hitos en la barra -->
-            <?php foreach ($milestones as $index => $milestone): ?>
-                <?php
-                $milestone_date = new DateTime($milestone->date);
-                $days_from_start = $start->diff($milestone_date)->days;
-                $position = ($days_from_start / $total_days) * 100;
-                $position = max(0, min(100, $position));
-                ?>
-                <div class="milestone-marker status-<?php echo esc_attr($milestone->status); ?>"
-                    style="left: <?php echo $position; ?>%;"
-                    onclick="openMilestoneModal(<?php echo $index; ?>)">
-                    <div class="milestone-marker-dot"></div>
-                </div>
-            <?php endforeach; ?>
         </div>
+
 
         <h1 style="text-align:center"><?php echo esc_html($project->name); ?></h1><br>
         <p style="text-align:center"><?php echo esc_html($project->description); ?></p><br>
@@ -751,27 +830,42 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
     <!-- Modal de hito -->
     <div id="milestoneModal" class="modal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeMilestoneModal()">&times;</span>
+           
+            <div style="display: flex; gap: 15px; align-items: center; padding: 30px;justify-content: space-between">
+                <div style="display: flex; gap: 15px; align-items: center; padding: 0px;">
+                    <div class="modal-date" id="modal-date"></div>
+                    <span class="modal-status" id="modal-status"></span>
+                </div>
+                <span class="modal-close" onclick="closeMilestoneModal()">&times;</span>
+            </div>
+            
+            <div style="display: flex; gap: 15px">
+                <div class="modal-info">
 
-            <div class="modal-carousel" id="modal-carousel">
-                <!-- Las imágenes se cargarán dinámicamente -->
+
+                    <h2 class="modal-title" id="modal-title"></h2>
+
+                    <div class="modal-description" id="modal-description"></div>
+
+                    <div class="milestone-nav-arrows">
+                        <button class="milestone-nav-btn" id="prev-milestone-btn" onclick="navigateMilestone(-1)">
+                            < Anterior
+                        </button>
+                        <button class="milestone-nav-btn" id="next-milestone-btn" onclick="navigateMilestone(1)">
+                            Siguiente >
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-carousel" id="modal-carousel">
+                    <!-- Las imágenes se cargarán dinámicamente -->
+                </div>
             </div>
 
-            <div class="modal-info">
-                <div class="modal-date" id="modal-date"></div>
-                <h2 class="modal-title" id="modal-title"></h2>
-                <span class="modal-status" id="modal-status"></span>
-                <div class="modal-description" id="modal-description"></div>
-            </div>
 
-            <div class="milestone-nav-arrows">
-                <button class="milestone-nav-btn" id="prev-milestone-btn" onclick="navigateMilestone(-1)">
-                    ← Hito Anterior
-                </button>
-                <button class="milestone-nav-btn" id="next-milestone-btn" onclick="navigateMilestone(1)">
-                    Siguiente Hito →
-                </button>
-            </div>
+
+
+
         </div>
     </div>
 
@@ -827,8 +921,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             carousel.innerHTML = '';
 
             const images = milestone.images && milestone.images.length > 0 ?
-                milestone.images :
-                [{
+                milestone.images : [{
                     image_url: 'https://via.placeholder.com/900x500/cccccc/666666?text=Sin+Imagenes'
                 }];
 
