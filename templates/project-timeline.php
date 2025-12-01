@@ -127,122 +127,136 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         }
 
         /* ===== BARRA DE TIMELINE SUPERIOR ===== */
-        .timeline-bar-container {
-            width: 100%;
-            padding: 0px;
-            background: #f2f2f2;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            overflow-x: auto;
-            overflow-y: hidden;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            scrollbar-width: thin;
-            scrollbar-color: #bfbfbf #f2f2f2;
-        }
+.timeline-bar-container {
+    width: 100%;
+    padding: 0px;
+    background: #f2f2f2;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    overflow-x: auto;
+    overflow-y: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    scrollbar-width: thin;
+    scrollbar-color: #bfbfbf #f2f2f2;
+}
 
-        .timeline-bar-container::-webkit-scrollbar {
-            height: 8px;
-        }
+.timeline-bar-container::-webkit-scrollbar {
+    height: 8px;
+}
 
-        .timeline-bar-container::-webkit-scrollbar-track {
-            background: #f2f2f2;
-        }
+.timeline-bar-container::-webkit-scrollbar-track {
+    background: #f2f2f2;
+}
 
-        .timeline-bar-container::-webkit-scrollbar-thumb {
-            background: #bfbfbf;
-            border-radius: 4px;
-        }
+.timeline-bar-container::-webkit-scrollbar-thumb {
+    background: #bfbfbf;
+    border-radius: 4px;
+}
 
-        .timeline-bar-container::-webkit-scrollbar-thumb:hover {
-            background: #999;
-        }
+.timeline-bar-container::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
 
-        /* Línea horizontal */
-        .timeline-bar {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 36%;
-            transform: translateY(-50%);
-            height: 2px;
-            background: black;
-            z-index: 99;
-        }
+/* Contenido scrollable en horizontal */
+.timeline-bar-inner {
+    display: flex;
+    gap: 0px;
+    padding: 0 60px;
+    position: relative;
+    z-index: 2;
+    min-width: max-content;
+}
 
-        /* Contenido scrollable en horizontal */
-        .timeline-bar-inner {
-            display: flex;
-            gap: 0px;
-            padding: 0 60px;
-            position: relative;
-            z-index: 2;
-            min-width: max-content;
-        }
+/* Línea horizontal - AHORA DENTRO DE timeline-bar-inner */
+.timeline-bar-inner::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    top: 36%;
+    transform: translateY(-50%);
+    height: 2px;
+    background: black;
+    z-index: 1;
+    pointer-events: none;
+}
 
-        /* Cada hito superior */
-        .timeline-top-item {
-            text-align: center;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 150px;
-            height: 70px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 5px;
-        }
+/* Cada hito superior */
+.timeline-top-item {
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+}
 
-    
+/* CAMBIO 2: Punto con background sólido para ocultar la línea */
+.timeline-top-point {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: 2px solid #000;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+    /* Añadir z-index superior y background */
+    position: relative;
+    z-index: 3;
+    background: #f2f2f2;
+}
 
+/* Colores según estado - ahora con background visible */
+.timeline-top-item.status-pendiente .timeline-top-point {
+    background: #EDEDED;
+}
 
+.timeline-top-item.status-en_proceso .timeline-top-point {
+    background: #FDC425;
+}
 
-        /* Punto con colores según estado */
-        .timeline-top-point {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            border: 2px solid #000;
-            margin: 0 auto;
-            transition: all 0.3s ease;
-        }
+.timeline-top-item.status-finalizado .timeline-top-point {
+    background: #FFDE88;
+}
 
+/* Fecha con colores según estado */
+.timeline-top-date {
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 0px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
 
+.timeline-top-item.status-pendiente {
+    background: #EDEDED;
+}
 
+.timeline-top-item.status-en_proceso {
+    background: #FDC425;
+}
 
+.timeline-top-item.status-finalizado {
+    background: #FFDE88;
+}
 
+.timeline-top-item:hover .timeline-top-date {
+    font-weight: 700;
+}
 
-        /* Fecha con colores según estado */
-        .timeline-top-date {
-            font-size: 13px;
-            font-weight: 600;
-            margin-top: 0px;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-        }
-
-        .timeline-top-item.status-pendiente {
-            background: #EDEDED;
-        }
-
-        .timeline-top-item.status-en_proceso {
-            background: #FDC425;
-        }
-
-        .timeline-top-item.status-finalizado {
-            background: #FFDE88;
-        }
-
-        .timeline-top-item:hover .timeline-top-date {
-            font-weight: 700;
-        }
-
-        .timeline-top-item.active .timeline-top-date {
-            font-weight: 700;
-            font-size: 14px;
-        }
+.timeline-top-item.active .timeline-top-point {
+    background-color: #000;
+}
+.timeline-top-item.active .timeline-top-date {
+    font-weight: 700;
+    font-size: 14px;
+}
 
         /* LÍNEA VERTICAL DEL TIMELINE */
         .vertical-timeline {
