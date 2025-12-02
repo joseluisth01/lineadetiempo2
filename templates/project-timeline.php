@@ -876,39 +876,30 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
     </div>
 
 
-    <?php
+<?php
 $documents_class = Timeline_Documents::get_instance();
 $documents = $documents_class->get_project_documents($project_id);
 
 if (count($documents) > 0):
 ?>
-<div style="background: rgba(0, 0, 0, 0.03); padding: 80px 0; margin-top: 100px;">
-    <div style="max-width: 1400px; margin: 0 auto; padding: 0 40px;">
-        <h2 style="text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 15px;">
+<div style="padding: 50px; margin-top: 100px; background-image: url('https://www.bebuilt.es/wp-content/uploads/2025/12/Background.webp'); background-size: cover; background-position: center;">
+    <div style="padding:50px; border-radius: 30px;background: rgba(0, 0, 0, 0.55);">
+        <h2 style="text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 15px; color:white">
             Descarga <span style="font-weight: 400;">cualquiera de los documentos</span> del proyecto
         </h2>
-        <p style="text-align: center; color: #666; margin-bottom: 60px; font-size: 16px;">
-            Aquí tienes disponibles todos los documentos importantes relacionados con tu obra
-        </p>
         
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 40px; justify-items: center;">
+        <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; margin-top:50px; max-width: 1200px; margin-left: auto; margin-right: auto;">
             <?php foreach ($documents as $doc): ?>
-                <?php
-                // Iconos según tipo de archivo
-                $icon_url = 'https://www.bebuilt.es/wp-content/uploads/2025/12/download-icon.svg'; // Icono por defecto
-                
-                // Puedes personalizar iconos según el tipo de archivo si lo deseas
-                ?>
                 <a href="<?php echo esc_url($doc->file_url); ?>" 
                    download 
                    target="_blank"
-                   style="text-decoration: none; text-align: center; transition: transform 0.3s;"
+                   style="text-decoration: none; text-align: center; transition: transform 0.3s; width: 180px;"
                    onmouseover="this.style.transform='translateY(-5px)'"
                    onmouseout="this.style.transform='translateY(0)'">
-                    <div style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid #000; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; background: #fff;">
-                        <img src="<?php echo $icon_url; ?>" alt="Descargar" style="width: 50px; height: 50px;">
+                    <div style="width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                        <img src="https://www.bebuilt.es/wp-content/uploads/2025/12/Vector-21.svg" alt="Descargar" style="width: 90%;">
                     </div>
-                    <div style="color: #000; font-size: 14px; font-weight: 600; max-width: 180px; word-wrap: break-word;">
+                    <div style="color: white; font-size: 17px; font-weight: 600; max-width: 180px; word-wrap: break-word; margin: 0 auto;">
                         <?php echo esc_html($doc->title); ?>
                     </div>
                 </a>
@@ -918,7 +909,6 @@ if (count($documents) > 0):
 </div>
 <?php endif; ?>
 
-<?php if (count($milestones) === 0): ?>
 
     <!-- Modal de hito -->
     <div id="milestoneModal" class="modal">
