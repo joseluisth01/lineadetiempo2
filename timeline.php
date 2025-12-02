@@ -1,16 +1,15 @@
 <?php
-
 /**
  * Plugin Name: Timeline - Sistema de Gestión de Proyectos
- * Description: Sistema completo de gestión de proyectos con línea de tiempo y hitos
- * Version: 2.0
+ * Description: Sistema completo de gestión de proyectos con línea de tiempo, hitos y auditoría
+ * Version: 2.1
  * Author: BeBuilt
  */
 
 if (!defined('ABSPATH')) exit;
 
 // Definir constantes
-define('TIMELINE_VERSION', '2.0');
+define('TIMELINE_VERSION', '2.1');
 define('TIMELINE_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('TIMELINE_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -20,6 +19,7 @@ $required_files = array(
     'includes/class-projects.php',
     'includes/class-milestones.php',
     'includes/class-documents.php',
+    'includes/class-audit-log.php',  // NUEVO: Sistema de auditoría
     'includes/handlers.php'
 );
 
@@ -36,18 +36,18 @@ foreach ($required_files as $file) {
 
 class Timeline_Plugin
 {
-
     private $table_users;
     private $db;
     private $projects;
     private $milestones;
+    private $audit_log;  // NUEVO
 
     public function __construct()
     {
         global $wpdb;
         $this->table_users = $wpdb->prefix . 'timeline_users';
 
-        // Inicializar clases solo si existen
+        // Inicializar clases
         if (class_exists('Timeline_Database')) {
             $this->db = Timeline_Database::get_instance();
         }
@@ -57,47 +57,44 @@ class Timeline_Plugin
         if (class_exists('Timeline_Milestones')) {
             $this->milestones = Timeline_Milestones::get_instance();
         }
+        if (class_exists('Timeline_Audit_Log')) {
+            $this->audit_log = Timeline_Audit_Log::get_instance();
+        }
 
-        // Hooks de activación
+        // Hooks
         register_activation_hook(__FILE__, array($this, 'activate'));
-
-        // Hooks de inicialización
         add_action('init', array($this, 'init'));
         add_action('template_redirect', array($this, 'handle_custom_pages'));
 
-        // Hooks de login/logout
+        // Login/logout
         add_action('admin_post_nopriv_timeline_login', array($this, 'handle_login'));
         add_action('admin_post_timeline_login', array($this, 'handle_login'));
         add_action('admin_post_timeline_logout', array($this, 'handle_logout'));
 
-        // Hooks de usuarios
+        // Usuarios
         add_action('admin_post_timeline_create_user', array($this, 'handle_create_user'));
         add_action('admin_post_timeline_change_password', array($this, 'handle_change_password'));
 
-        // Hooks de proyectos
+        // Proyectos
         add_action('admin_post_timeline_create_project', array($this, 'handle_create_project'));
         add_action('admin_post_timeline_update_project', array($this, 'handle_update_project'));
 
-        // Reescribir URLs
+        // URLs
         add_filter('query_vars', array($this, 'add_query_vars'));
         add_action('init', array($this, 'add_rewrite_rules'));
     }
 
-    /**
-     * Activación del plugin
-     */
     public function activate()
     {
         global $wpdb;
 
-        // Crear todas las tablas si la clase existe
+        // Crear todas las tablas
         if ($this->db) {
             $this->db->create_tables();
         }
 
         // Crear tabla de usuarios
         $charset_collate = $wpdb->get_charset_collate();
-
         $sql = "CREATE TABLE IF NOT EXISTS {$this->table_users} (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             username varchar(100) NOT NULL,
@@ -130,13 +127,9 @@ class Timeline_Plugin
             );
         }
 
-        // Flush rewrite rules
         flush_rewrite_rules();
     }
 
-    /**
-     * Agregar variables de consulta
-     */
     public function add_query_vars($vars)
     {
         $vars[] = 'timeline_page';
@@ -144,9 +137,6 @@ class Timeline_Plugin
         return $vars;
     }
 
-    /**
-     * Agregar reglas de reescritura
-     */
     public function add_rewrite_rules()
     {
         add_rewrite_rule('^login-proyectos/?$', 'index.php?timeline_page=login', 'top');
@@ -160,11 +150,9 @@ class Timeline_Plugin
         add_rewrite_rule('^timeline-proyecto/([0-9]+)/?$', 'index.php?timeline_page=project_view&timeline_id=$matches[1]', 'top');
         add_rewrite_rule('^timeline-proyecto-admin/([0-9]+)/?$', 'index.php?timeline_page=project_admin&timeline_id=$matches[1]', 'top');
         add_rewrite_rule('^timeline-documentos/([0-9]+)/?$', 'index.php?timeline_page=project_documents&timeline_id=$matches[1]', 'top');
+        add_rewrite_rule('^timeline-audit-log/?$', 'index.php?timeline_page=audit_log', 'top');  // NUEVO
     }
 
-    /**
-     * Inicialización
-     */
     public function init()
     {
         if (!session_id()) {
@@ -172,17 +160,11 @@ class Timeline_Plugin
         }
     }
 
-    /**
-     * Verificar si el usuario está logueado
-     */
     public function is_logged_in()
     {
         return isset($_SESSION['timeline_user_id']);
     }
 
-    /**
-     * Obtener usuario actual
-     */
     public function get_current_user()
     {
         if (!$this->is_logged_in()) {
@@ -197,31 +179,21 @@ class Timeline_Plugin
         ));
     }
 
-    /**
-     * Verificar si el usuario puede gestionar usuarios
-     */
     public function can_manage_users($user)
     {
         if (!$user) return false;
         return in_array($user->role, array('super_admin', 'administrador'));
     }
 
-    /**
-     * Verificar si el usuario puede gestionar proyectos
-     */
     public function can_manage_projects($user)
     {
         if (!$user) return false;
         return in_array($user->role, array('super_admin', 'administrador'));
     }
 
-    /**
-     * Manejar páginas personalizadas
-     */
     public function handle_custom_pages()
     {
         $page = get_query_var('timeline_page');
-
         if (!$page) return;
 
         switch ($page) {
@@ -244,12 +216,10 @@ class Timeline_Plugin
                     exit;
                 }
                 $current_user = $this->get_current_user();
-
                 if ($current_user->role === 'cliente') {
                     wp_redirect(home_url('/timeline-mis-proyectos'));
                     exit;
                 }
-
                 $this->load_template('dashboard');
                 break;
 
@@ -259,7 +229,6 @@ class Timeline_Plugin
                     exit;
                 }
                 $current_user = $this->get_current_user();
-
                 if (!$this->can_manage_users($current_user)) {
                     wp_redirect(home_url('/timeline-dashboard'));
                     exit;
@@ -281,7 +250,6 @@ class Timeline_Plugin
                     exit;
                 }
                 $current_user = $this->get_current_user();
-
                 if (!$this->can_manage_projects($current_user)) {
                     wp_redirect(home_url('/timeline-mis-proyectos'));
                     exit;
@@ -303,7 +271,6 @@ class Timeline_Plugin
                     exit;
                 }
                 $current_user = $this->get_current_user();
-
                 if (!$this->can_manage_projects($current_user)) {
                     wp_redirect(home_url('/timeline-dashboard'));
                     exit;
@@ -317,18 +284,15 @@ class Timeline_Plugin
                     exit;
                 }
                 $current_user = $this->get_current_user();
-
                 if (!$this->can_manage_projects($current_user)) {
                     wp_redirect(home_url('/timeline-dashboard'));
                     exit;
                 }
-
                 $project_id = get_query_var('timeline_id');
                 if (!$project_id) {
                     wp_redirect(home_url('/timeline-proyectos'));
                     exit;
                 }
-
                 $this->load_template('project-form');
                 break;
 
@@ -337,14 +301,24 @@ class Timeline_Plugin
                     wp_redirect(home_url('/login-proyectos'));
                     exit;
                 }
-
                 $project_id = get_query_var('timeline_id');
                 if (!$project_id) {
                     wp_redirect(home_url('/timeline-dashboard'));
                     exit;
                 }
-
-                // Cargar la vista del timeline para clientes
+                
+                // REGISTRAR VISUALIZACIÓN DEL PROYECTO
+                $current_user = $this->get_current_user();
+                if ($this->audit_log) {
+                    $this->audit_log->log(
+                        $current_user->id,
+                        'view',
+                        'project',
+                        $project_id,
+                        'Proyecto visualizado'
+                    );
+                }
+                
                 $this->load_template('project-timeline');
                 break;
 
@@ -354,19 +328,15 @@ class Timeline_Plugin
                     exit;
                 }
                 $current_user = $this->get_current_user();
-
                 if (!$this->can_manage_projects($current_user)) {
                     wp_redirect(home_url('/timeline-dashboard'));
                     exit;
                 }
-
                 $project_id = get_query_var('timeline_id');
                 if (!$project_id) {
                     wp_redirect(home_url('/timeline-proyectos'));
                     exit;
                 }
-
-                // Cargar la vista de administración del timeline
                 $this->load_template_admin('project-timeline-admin');
                 break;
 
@@ -376,26 +346,34 @@ class Timeline_Plugin
                     exit;
                 }
                 $current_user = $this->get_current_user();
-
                 if (!$this->can_manage_projects($current_user)) {
                     wp_redirect(home_url('/timeline-dashboard'));
                     exit;
                 }
-
                 $project_id = get_query_var('timeline_id');
                 if (!$project_id) {
                     wp_redirect(home_url('/timeline-proyectos'));
                     exit;
                 }
-
                 $this->load_template_admin('project-documents');
+                break;
+
+            // NUEVO: Página de audit log
+            case 'audit_log':
+                if (!$this->is_logged_in()) {
+                    wp_redirect(home_url('/login-proyectos'));
+                    exit;
+                }
+                $current_user = $this->get_current_user();
+                if (!$this->can_manage_users($current_user)) {
+                    wp_redirect(home_url('/timeline-dashboard'));
+                    exit;
+                }
+                $this->load_template_admin('audit-log');
                 break;
         }
     }
 
-    /**
-     * Cargar template
-     */
     private function load_template($template)
     {
         $template_file = TIMELINE_PLUGIN_DIR . 'templates/' . $template . '.php';
@@ -405,10 +383,8 @@ class Timeline_Plugin
             $projects_class = $this->projects;
             $milestones_class = $this->milestones;
 
-            // Guardar referencia global para que los templates puedan acceder
             $GLOBALS['timeline_plugin'] = $this;
 
-            // Variables específicas por template
             switch ($template) {
                 case 'users':
                     global $wpdb;
@@ -416,19 +392,11 @@ class Timeline_Plugin
                     break;
 
                 case 'projects':
-                    if ($this->projects) {
-                        $projects = $this->projects->get_all_projects();
-                    } else {
-                        $projects = array();
-                    }
+                    $projects = $this->projects ? $this->projects->get_all_projects() : array();
                     break;
 
                 case 'my-projects':
-                    if ($this->projects) {
-                        $projects = $this->projects->get_client_projects($current_user->id);
-                    } else {
-                        $projects = array();
-                    }
+                    $projects = $this->projects ? $this->projects->get_client_projects($current_user->id) : array();
                     break;
 
                 case 'project-form':
@@ -452,9 +420,6 @@ class Timeline_Plugin
         }
     }
 
-    /**
-     * Cargar template de admin
-     */
     private function load_template_admin($template)
     {
         $template_file = TIMELINE_PLUGIN_DIR . 'admin/' . $template . '.php';
@@ -463,8 +428,6 @@ class Timeline_Plugin
             $current_user = $this->get_current_user();
             $projects_class = $this->projects;
             $milestones_class = $this->milestones;
-
-            // Guardar referencia global
             $GLOBALS['timeline_plugin'] = $this;
 
             include $template_file;
@@ -474,9 +437,6 @@ class Timeline_Plugin
         }
     }
 
-    /**
-     * Manejar login
-     */
     public function handle_login()
     {
         if (
@@ -501,6 +461,17 @@ class Timeline_Plugin
             $_SESSION['timeline_user_role'] = $user->role;
             $_SESSION['timeline_username'] = $user->username;
 
+            // REGISTRAR LOGIN
+            if ($this->audit_log) {
+                $this->audit_log->log(
+                    $user->id,
+                    'login',
+                    'user',
+                    $user->id,
+                    'Inicio de sesión exitoso'
+                );
+            }
+
             if ($user->role === 'cliente') {
                 wp_redirect(home_url('/timeline-mis-proyectos'));
             } else {
@@ -513,19 +484,25 @@ class Timeline_Plugin
         exit;
     }
 
-    /**
-     * Manejar logout
-     */
     public function handle_logout()
     {
+        // REGISTRAR LOGOUT ANTES DE DESTRUIR SESIÓN
+        if ($this->is_logged_in() && $this->audit_log) {
+            $current_user = $this->get_current_user();
+            $this->audit_log->log(
+                $current_user->id,
+                'logout',
+                'user',
+                $current_user->id,
+                'Cierre de sesión'
+            );
+        }
+
         session_destroy();
         wp_redirect(home_url('/login-proyectos?logout=success'));
         exit;
     }
 
-    /**
-     * Manejar creación de usuario
-     */
     public function handle_create_user()
     {
         if (!$this->is_logged_in()) {
@@ -536,7 +513,7 @@ class Timeline_Plugin
         $current_user = $this->get_current_user();
 
         if (!$this->can_manage_users($current_user)) {
-            wp_die('No tienes permisos para realizar esta acción.');
+            wp_die('No tienes permisos.');
         }
 
         if (
@@ -557,11 +534,6 @@ class Timeline_Plugin
             exit;
         }
 
-        if ($role === 'administrador' && $current_user->role !== 'super_admin') {
-            wp_redirect(home_url('/timeline-usuarios?error=permission'));
-            exit;
-        }
-
         $password = wp_generate_password(12, false);
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
@@ -576,6 +548,19 @@ class Timeline_Plugin
         );
 
         if ($result) {
+            $new_user_id = $wpdb->insert_id;
+            
+            // REGISTRAR CREACIÓN DE USUARIO
+            if ($this->audit_log) {
+                $this->audit_log->log(
+                    $current_user->id,
+                    'create',
+                    'user',
+                    $new_user_id,
+                    "Usuario creado: {$username} ({$role})"
+                );
+            }
+
             $this->send_welcome_email($username, $email, $password);
             wp_redirect(home_url('/timeline-usuarios?success=created'));
         } else {
@@ -584,9 +569,6 @@ class Timeline_Plugin
         exit;
     }
 
-    /**
-     * Manejar cambio de contraseña
-     */
     public function handle_change_password()
     {
         if (!$this->is_logged_in()) {
@@ -630,6 +612,17 @@ class Timeline_Plugin
         );
 
         if ($result !== false) {
+            // REGISTRAR CAMBIO DE CONTRASEÑA
+            if ($this->audit_log) {
+                $this->audit_log->log(
+                    $current_user->id,
+                    'update',
+                    'user',
+                    $current_user->id,
+                    'Contraseña actualizada'
+                );
+            }
+
             wp_redirect(home_url('/timeline-perfil?success=password_changed'));
         } else {
             wp_redirect(home_url('/timeline-perfil?error=failed'));
@@ -637,9 +630,6 @@ class Timeline_Plugin
         exit;
     }
 
-    /**
-     * Manejar creación de proyecto
-     */
     public function handle_create_project()
     {
         if (!$this->is_logged_in() || !$this->projects) {
@@ -660,12 +650,9 @@ class Timeline_Plugin
             wp_die('Error de seguridad');
         }
 
-        // Procesar imagen
         $featured_image = '';
         if (!empty($_POST['featured_image'])) {
             $image_data = $_POST['featured_image'];
-
-            // Si es base64, guardar como archivo
             if (strpos($image_data, 'data:image') === 0) {
                 $featured_image = $this->save_base64_image($image_data, 'project');
             } else {
@@ -699,14 +686,8 @@ class Timeline_Plugin
         exit;
     }
 
-    /**
-     * Manejar actualización de proyecto
-     */
     public function handle_update_project()
     {
-        error_log('POST project_status: ' . (isset($_POST['project_status']) ? $_POST['project_status'] : 'NO ENVIADO'));
-        error_log('POST completo: ' . print_r($_POST, true));
-
         if (!$this->is_logged_in() || !$this->projects) {
             wp_redirect(home_url('/login-proyectos'));
             exit;
@@ -727,11 +708,9 @@ class Timeline_Plugin
 
         $project_id = intval($_POST['project_id']);
 
-        // Procesar imagen
         $featured_image = '';
         if (!empty($_POST['featured_image'])) {
             $image_data = $_POST['featured_image'];
-
             if (strpos($image_data, 'data:image') === 0) {
                 $featured_image = $this->save_base64_image($image_data, 'project');
             } else {
@@ -769,28 +748,21 @@ class Timeline_Plugin
         exit;
     }
 
-    /**
-     * Guardar imagen base64 como archivo
-     */
     private function save_base64_image($base64_string, $prefix = 'image')
     {
-        // Extraer el tipo de imagen y los datos
         if (preg_match('/^data:image\/(\w+);base64,/', $base64_string, $type)) {
             $base64_string = substr($base64_string, strpos($base64_string, ',') + 1);
-            $type = strtolower($type[1]); // jpg, png, gif
+            $type = strtolower($type[1]);
 
-            // Validar tipo de imagen
             if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png'])) {
                 return '';
             }
 
             $base64_string = base64_decode($base64_string);
-
             if ($base64_string === false) {
                 return '';
             }
 
-            // Crear directorio si no existe
             $upload_dir = wp_upload_dir();
             $timeline_dir = $upload_dir['basedir'] . '/timeline-projects';
 
@@ -798,13 +770,10 @@ class Timeline_Plugin
                 wp_mkdir_p($timeline_dir);
             }
 
-            // Generar nombre único
             $filename = $prefix . '_' . uniqid() . '.' . $type;
             $filepath = $timeline_dir . '/' . $filename;
 
-            // Guardar archivo
             if (file_put_contents($filepath, $base64_string)) {
-                // Retornar URL
                 return $upload_dir['baseurl'] . '/timeline-projects/' . $filename;
             }
         }
@@ -812,9 +781,6 @@ class Timeline_Plugin
         return '';
     }
 
-    /**
-     * Enviar email de bienvenida
-     */
     private function send_welcome_email($username, $email, $password)
     {
         $login_url = home_url('/login-proyectos');

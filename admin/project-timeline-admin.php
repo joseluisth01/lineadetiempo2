@@ -448,7 +448,7 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
                         </div>
                         
                         <div class="milestone-actions">
-                            <button class="btn-small" onclick='editMilestone(<?php echo json_encode($milestone); ?>)'>Editar</button>
+                            <button class="btn-small" onclick='editMilestone(<?php echo htmlspecialchars(json_encode($milestone), ENT_QUOTES, 'UTF-8'); ?>)'>Editar</button>
                             <button class="btn-small" onclick="deleteMilestone(<?php echo $milestone->id; ?>)">Eliminar</button>
                         </div>
                     </div>

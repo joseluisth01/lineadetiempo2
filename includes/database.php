@@ -2,6 +2,7 @@
 /**
  * Gestión de base de datos - Creación de tablas
  * Archivo: includes/database.php
+ * ACTUALIZADO: Tabla de audit log mejorada con IP y User Agent
  */
 
 if (!defined('ABSPATH')) exit;
@@ -40,7 +41,8 @@ class Timeline_Database {
             created_by mediumint(9) NOT NULL,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY (id)
+            PRIMARY KEY (id),
+            KEY created_by (created_by)
         ) $charset_collate;";
         
         // Tabla de relación proyecto-cliente (muchos a muchos)
@@ -51,7 +53,9 @@ class Timeline_Database {
             client_id mediumint(9) NOT NULL,
             assigned_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
-            UNIQUE KEY project_client (project_id, client_id)
+            UNIQUE KEY project_client (project_id, client_id),
+            KEY project_id (project_id),
+            KEY client_id (client_id)
         ) $charset_collate;";
         
         // Tabla de hitos
@@ -67,7 +71,9 @@ class Timeline_Database {
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
-            KEY project_id (project_id)
+            KEY project_id (project_id),
+            KEY created_by (created_by),
+            KEY date (date)
         ) $charset_collate;";
         
         // Tabla de imágenes de hitos
@@ -93,10 +99,11 @@ class Timeline_Database {
             uploaded_by mediumint(9) NOT NULL,
             uploaded_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
-            KEY project_id (project_id)
+            KEY project_id (project_id),
+            KEY uploaded_by (uploaded_by)
         ) $charset_collate;";
         
-        // Tabla de logs de actividad
+        // Tabla de logs de actividad - MEJORADA CON MÁS CAMPOS
         $table_activity_log = $wpdb->prefix . 'timeline_activity_log';
         $sql_activity_log = "CREATE TABLE IF NOT EXISTS {$table_activity_log} (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -105,10 +112,15 @@ class Timeline_Database {
             entity_type varchar(50) NOT NULL,
             entity_id mediumint(9) NOT NULL,
             details text,
+            metadata text,
+            ip_address varchar(45),
+            user_agent text,
             created_at datetime DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY (id),
             KEY user_id (user_id),
-            KEY entity (entity_type, entity_id)
+            KEY entity (entity_type, entity_id),
+            KEY action (action),
+            KEY created_at (created_at)
         ) $charset_collate;";
         
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
