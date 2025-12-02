@@ -133,7 +133,7 @@
         }
         
         .mobile-menu-toggle.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -7px);
+            transform: rotate(-45deg) translate(3px, -3px);
         }
         
         .container {

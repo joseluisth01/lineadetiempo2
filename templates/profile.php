@@ -35,6 +35,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 9999;
         }
         
         .navbar-brand {
@@ -43,6 +45,7 @@
             letter-spacing: <?php echo $current_user->role === 'cliente' ? '2px' : '3px'; ?>;
             text-transform: uppercase;
             color: <?php echo $current_user->role === 'cliente' ? '#000' : 'rgba(255, 255, 255, 0.9)'; ?>;
+            z-index: 1001;
         }
         
         .navbar-menu {
@@ -63,6 +66,7 @@
             text-transform: uppercase;
             transition: color 0.3s;
             font-weight: <?php echo $current_user->role === 'cliente' ? '500' : '300'; ?>;
+            white-space: nowrap;
         }
         
         .navbar-menu a:hover,
@@ -112,6 +116,7 @@
             display: inline-block;
             transition: all 0.3s;
             font-weight: 300;
+            white-space: nowrap;
         }
         
         .btn-logout:hover {
@@ -122,6 +127,35 @@
             border-color: rgba(200, 150, 100, 0.5);
             color: rgba(200, 150, 100, 0.9);
             <?php endif; ?>
+        }
+        
+        /* Hamburger Menu */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 2001;
+            padding: 5px;
+        }
+        
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 2px;
+            background: <?php echo $current_user->role === 'cliente' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)'; ?>;
+            transition: all 0.3s;
+        }
+        
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+        
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(3px, -3px);
         }
         
         .container {
@@ -291,13 +325,94 @@
         
         @media (max-width: 768px) {
             .navbar {
-                padding: 20px;
-                flex-direction: column;
-                gap: 20px;
+                padding: 15px 20px;
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
             }
             
             .navbar-menu {
+                position: fixed;
+                top: 88px;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                <?php if ($current_user->role === 'cliente'): ?>
+                background: rgba(255, 255, 255, 0.98);
+                border-left: 1px solid #e0e0e0;
+                <?php else: ?>
+                background: rgba(10, 10, 10, 0.98);
+                backdrop-filter: blur(20px);
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+                <?php endif; ?>
+                flex-direction: column;
+                padding: 80px 30px 30px;
+                gap: 25px;
+                align-items: flex-start;
+                transition: right 0.4s ease;
+                z-index: 2000;
+                overflow-y: auto;
+            }
+            
+            .navbar-menu.active {
+                right: 0;
+            }
+            
+            .navbar-menu a {
+                font-size: 14px;
+                padding: 10px 0;
+                width: 100%;
+                border-bottom: 1px solid <?php echo $current_user->role === 'cliente' ? '#f0f0f0' : 'rgba(255, 255, 255, 0.05)'; ?>;
+            }
+            
+            .navbar-user {
+                position: fixed;
+                bottom: 0;
+                right: -100%;
+                width: 280px;
+                <?php if ($current_user->role === 'cliente'): ?>
+                background: rgba(250, 250, 250, 0.98);
+                border-left: 1px solid #e0e0e0;
+                border-top: 1px solid #e0e0e0;
+                <?php else: ?>
+                background: rgba(15, 15, 15, 0.98);
+                backdrop-filter: blur(20px);
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                <?php endif; ?>
+                flex-direction: column;
+                padding: 25px 30px;
                 gap: 20px;
+                align-items: stretch;
+                transition: right 0.4s ease;
+                z-index: 2000;
+                top:0px;
+            }
+            
+            .navbar-user.active {
+                right: 0;
+            }
+            
+            .user-info {
+                text-align: left;
+                padding-bottom: 15px;
+                border-bottom: 1px solid <?php echo $current_user->role === 'cliente' ? '#e0e0e0' : 'rgba(255, 255, 255, 0.1)'; ?>;
+            }
+            
+            .user-name {
+                font-size: 15px;
+            }
+            
+            .user-role {
+                font-size: 11px;
+                margin-top: 5px;
+            }
+            
+            .btn-logout {
+                width: 100%;
+                text-align: center;
+                padding: 12px 20px;
             }
             
             .container {
@@ -311,13 +426,30 @@
             .card {
                 padding: 30px 20px;
             }
+            
+            .info-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .info-label {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="navbar-brand">BeBuilt</div>
-        <div class="navbar-menu">
+        
+        <!-- Hamburger Menu -->
+        <div class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        
+        <div class="navbar-menu" id="navbarMenu">
             <?php if ($current_user->role === 'cliente'): ?>
                 <a href="<?php echo home_url('/timeline-mis-proyectos'); ?>">Mis Proyectos</a>
                 <a href="<?php echo home_url('/timeline-perfil'); ?>" class="active">Mi Perfil</a>
@@ -326,11 +458,13 @@
                 <?php if ($current_user->role === 'super_admin' || $current_user->role === 'administrador'): ?>
                     <a href="<?php echo home_url('/timeline-proyectos'); ?>">Proyectos</a>
                     <a href="<?php echo home_url('/timeline-usuarios'); ?>">Usuarios</a>
+                    <a href="<?php echo home_url('/timeline-audit-log'); ?>">Auditoría</a>
                 <?php endif; ?>
                 <a href="<?php echo home_url('/timeline-perfil'); ?>" class="active">Perfil</a>
             <?php endif; ?>
         </div>
-        <div class="navbar-user">
+        
+        <div class="navbar-user" id="navbarUser">
             <div class="user-info">
                 <div class="user-name"><?php echo esc_html($current_user->username); ?></div>
                 <div class="user-role">
@@ -452,5 +586,26 @@
             </form>
         </div>
     </div>
+    
+    <script>
+        function toggleMobileMenu() {
+            const toggle = document.getElementById('mobileMenuToggle');
+            const menu = document.getElementById('navbarMenu');
+            const user = document.getElementById('navbarUser');
+            
+            toggle.classList.toggle('active');
+            menu.classList.toggle('active');
+            user.classList.toggle('active');
+        }
+        
+        // Cerrar menú al hacer clic en un enlace (en móvil)
+        document.querySelectorAll('.navbar-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

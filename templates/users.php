@@ -25,6 +25,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 9999;
         }
         
         .navbar-brand {
@@ -33,6 +35,7 @@
             letter-spacing: 3px;
             text-transform: uppercase;
             color: rgba(255, 255, 255, 0.9);
+            z-index: 1001;
         }
         
         .navbar-menu {
@@ -49,6 +52,7 @@
             text-transform: uppercase;
             transition: color 0.3s;
             font-weight: 300;
+            white-space: nowrap;
         }
         
         .navbar-menu a:hover,
@@ -94,11 +98,41 @@
             display: inline-block;
             transition: all 0.3s;
             font-weight: 300;
+            white-space: nowrap;
         }
         
         .btn-logout:hover {
             border-color: rgba(200, 150, 100, 0.5);
             color: rgba(200, 150, 100, 0.9);
+        }
+        
+        /* Hamburger Menu */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 2001;
+            padding: 5px;
+        }
+        
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+        }
+        
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+        
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(3px, -3px);
         }
         
         .container {
@@ -149,6 +183,7 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 50px 40px;
+            overflow: hidden;
         }
         
         .card h2 {
@@ -245,9 +280,18 @@
             line-height: 1.6;
         }
         
+        /* Tabla con scroll horizontal en móvil */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+            position: relative;
+        }
+        
         table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 600px;
         }
         
         thead {
@@ -287,6 +331,7 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             border: 1px solid;
+            white-space: nowrap;
         }
         
         .badge-red {
@@ -351,12 +396,26 @@
             line-height: 1.6;
         }
 
-        #role-filter{
+        #role-filter {
             background: black !important;
         }
         
         .roles-info li:last-child {
             border-bottom: none;
+        }
+        
+        .filter-group select {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 30px 8px 15px;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            appearance: none;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'rgba(255,255,255,0.4)\' d=\'M6 9L1 4h10z\'/%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
         }
         
         @media (max-width: 1200px) {
@@ -367,13 +426,83 @@
         
         @media (max-width: 768px) {
             .navbar {
-                padding: 20px;
-                flex-direction: column;
-                gap: 20px;
+                padding: 15px 20px;
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
             }
             
             .navbar-menu {
+                position: fixed;
+                top: 88px;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: rgba(10, 10, 10, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 80px 30px 30px;
+                gap: 25px;
+                align-items: flex-start;
+                transition: right 0.4s ease;
+                z-index: 2000;
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+                overflow-y: auto;
+            }
+            
+            .navbar-menu.active {
+                right: 0;
+            }
+            
+            .navbar-menu a {
+                font-size: 14px;
+                padding: 10px 0;
+                width: 100%;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            
+            .navbar-user {
+                position: fixed;
+                bottom: 0;
+                right: -100%;
+                width: 280px;
+                background: rgba(15, 15, 15, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 25px 30px;
                 gap: 20px;
+                align-items: stretch;
+                transition: right 0.4s ease;
+                z-index: 2000;
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                top: 0px;
+            }
+            
+            .navbar-user.active {
+                right: 0;
+            }
+            
+            .user-info {
+                text-align: left;
+                padding-bottom: 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .user-name {
+                font-size: 15px;
+            }
+            
+            .user-role {
+                font-size: 11px;
+                margin-top: 5px;
+            }
+            
+            .btn-logout {
+                width: 100%;
+                text-align: center;
+                padding: 12px 20px;
             }
             
             .container {
@@ -383,20 +512,55 @@
             .page-header h1 {
                 font-size: 32px;
             }
+            
+            .card {
+                padding: 30px 20px;
+            }
+            
+            .table-wrapper {
+                width: 100%;
+                overflow-x: auto;
+                margin: 0;
+                padding: 0;
+            }
+            
+            table {
+                min-width: 600px;
+            }
+            
+            /* Indicador de scroll en móvil */
+            .table-wrapper::after {
+                content: '← Desliza para ver más →';
+                display: block;
+                text-align: center;
+                padding: 15px;
+                font-size: 11px;
+                color: rgba(255, 255, 255, 0.3);
+                letter-spacing: 1px;
+                min-width: 600px;
+            }
         }
     </style>
-        
 </head>
 <body>
     <nav class="navbar">
         <div class="navbar-brand">BeBuilt</div>
-        <div class="navbar-menu">
+        
+        <!-- Hamburger Menu -->
+        <div class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        
+        <div class="navbar-menu" id="navbarMenu">
             <a href="<?php echo home_url('/timeline-dashboard'); ?>">Dashboard</a>
             <a href="<?php echo home_url('/timeline-proyectos'); ?>">Proyectos</a>
             <a href="<?php echo home_url('/timeline-usuarios'); ?>" class="active">Usuarios</a>
             <a href="<?php echo home_url('/timeline-perfil'); ?>">Perfil</a>
         </div>
-        <div class="navbar-user">
+        
+        <div class="navbar-user" id="navbarUser">
             <div class="user-info">
                 <div class="user-name"><?php echo esc_html($current_user->username); ?></div>
                 <div class="user-role">
@@ -481,10 +645,10 @@
             
             <!-- Lista de usuarios -->
             <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 15px;">
                     <h2 style="margin: 0;">Usuarios</h2>
                     <div class="filter-group">
-                        <select id="role-filter" style="border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; padding: 8px 30px 8px 15px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'rgba(255,255,255,0.4)\' d=\'M6 9L1 4h10z\'/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 10px center;">
+                        <select id="role-filter">
                             <option value="all">Todos</option>
                             <option value="super_admin">Super Admin</option>
                             <option value="administrador">Administradores</option>
@@ -493,50 +657,52 @@
                     </div>
                 </div>
                 
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Email</th>
-                            <th>Rol</th>
-                            <th>Creación</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-table-body">
-                        <?php if (count($users) > 0): ?>
-                            <?php foreach ($users as $user): ?>
-                                <tr data-role="<?php echo esc_attr($user->role); ?>">
-                                    <td><?php echo esc_html($user->username); ?></td>
-                                    <td><?php echo esc_html($user->email); ?></td>
-                                    <td>
-                                        <?php
-                                        switch($user->role) {
-                                            case 'super_admin':
-                                                echo '<span class="badge badge-red">Super Admin</span>';
-                                                break;
-                                            case 'administrador':
-                                                echo '<span class="badge badge-blue">Administrador</span>';
-                                                break;
-                                            case 'cliente':
-                                                echo '<span class="badge badge-green">Cliente</span>';
-                                                break;
-                                        }
-                                        ?>
-                                    </td>
-                                    <td><?php echo date('d/m/Y', strtotime($user->created_at)); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
                             <tr>
-                                <td colspan="4">
-                                    <div class="empty-state">
-                                        <p>No hay usuarios</p>
-                                    </div>
-                                </td>
+                                <th>Usuario</th>
+                                <th>Email</th>
+                                <th>Rol</th>
+                                <th>Creación</th>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody id="users-table-body">
+                            <?php if (count($users) > 0): ?>
+                                <?php foreach ($users as $user): ?>
+                                    <tr data-role="<?php echo esc_attr($user->role); ?>">
+                                        <td><?php echo esc_html($user->username); ?></td>
+                                        <td><?php echo esc_html($user->email); ?></td>
+                                        <td>
+                                            <?php
+                                            switch($user->role) {
+                                                case 'super_admin':
+                                                    echo '<span class="badge badge-red">Super Admin</span>';
+                                                    break;
+                                                case 'administrador':
+                                                    echo '<span class="badge badge-blue">Administrador</span>';
+                                                    break;
+                                                case 'cliente':
+                                                    echo '<span class="badge badge-green">Cliente</span>';
+                                                    break;
+                                            }
+                                            ?>
+                                        </td>
+                                        <td><?php echo date('d/m/Y', strtotime($user->created_at)); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="empty-state">
+                                            <p>No hay usuarios</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
                 
                 <div class="roles-info">
                     <h3>Información</h3>
@@ -556,6 +722,25 @@
     </div>
     
     <script>
+        function toggleMobileMenu() {
+            const toggle = document.getElementById('mobileMenuToggle');
+            const menu = document.getElementById('navbarMenu');
+            const user = document.getElementById('navbarUser');
+            
+            toggle.classList.toggle('active');
+            menu.classList.toggle('active');
+            user.classList.toggle('active');
+        }
+        
+        // Cerrar menú al hacer clic en un enlace (en móvil)
+        document.querySelectorAll('.navbar-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+        
         // Filtro de usuarios
         document.getElementById('role-filter').addEventListener('change', function() {
             const filterValue = this.value;
