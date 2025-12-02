@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Template: Gestión de Proyectos (Solo Admin/Super Admin)
  */
@@ -32,6 +31,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 9999;
         }
 
         .navbar-brand {
@@ -40,6 +41,7 @@
             letter-spacing: 3px;
             text-transform: uppercase;
             color: rgba(255, 255, 255, 0.9);
+            z-index: 1001;
         }
 
         .navbar-menu {
@@ -56,6 +58,7 @@
             text-transform: uppercase;
             transition: color 0.3s;
             font-weight: 300;
+            white-space: nowrap;
         }
 
         .navbar-menu a:hover,
@@ -101,11 +104,41 @@
             display: inline-block;
             transition: all 0.3s;
             font-weight: 300;
+            white-space: nowrap;
         }
 
         .btn-logout:hover {
             border-color: rgba(200, 150, 100, 0.5);
             color: rgba(200, 150, 100, 0.9);
+        }
+
+        /* Hamburger Menu */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            z-index: 2001;
+            padding: 5px;
+        }
+
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(3px, -3px);
         }
 
         .container {
@@ -299,28 +332,6 @@
             margin-bottom: 30px;
         }
 
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 20px;
-                flex-direction: column;
-                gap: 20px;
-            }
-
-            .container {
-                padding: 40px 20px;
-            }
-
-            .page-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .project-status-badge {
             display: inline-block;
             padding: 8px 16px;
@@ -350,12 +361,104 @@
             border: 1px solid rgba(255, 222, 136, 0.3);
         }
 
-        .project-dates {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .navbar-menu {
+                position: fixed;
+                top: 88px;
+                right: -100%;
+                width: 280px;
+                height: 100vh;
+                background: rgba(10, 10, 10, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 80px 30px 30px;
+                gap: 25px;
+                align-items: flex-start;
+                transition: right 0.4s ease;
+                z-index: 2000;
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+                overflow-y: auto;
+            }
+
+            .navbar-menu.active {
+                right: 0;
+            }
+
+            .navbar-menu a {
+                font-size: 14px;
+                padding: 10px 0;
+                width: 100%;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+
+            .navbar-user {
+                position: fixed;
+                bottom: 0;
+                right: -100%;
+                width: 280px;
+                background: rgba(15, 15, 15, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 25px 30px;
+                gap: 20px;
+                align-items: stretch;
+                transition: right 0.4s ease;
+                z-index: 2000;
+                border-left: 1px solid rgba(255, 255, 255, 0.1);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                top: 0px;
+            }
+
+            .navbar-user.active {
+                right: 0;
+            }
+
+            .user-info {
+                text-align: left;
+                padding-bottom: 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .user-name {
+                font-size: 15px;
+            }
+
+            .user-role {
+                font-size: 11px;
+                margin-top: 5px;
+            }
+
+            .btn-logout {
+                width: 100%;
+                text-align: center;
+                padding: 12px 20px;
+            }
+
+            .container {
+                padding: 40px 20px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .page-header h1 {
+                font-size: 32px;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -363,13 +466,23 @@
 <body>
     <nav class="navbar">
         <div class="navbar-brand">BeBuilt</div>
-        <div class="navbar-menu">
+        
+        <!-- Hamburger Menu -->
+        <div class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        
+        <div class="navbar-menu" id="navbarMenu">
             <a href="<?php echo home_url('/timeline-dashboard'); ?>">Dashboard</a>
             <a href="<?php echo home_url('/timeline-proyectos'); ?>" class="active">Proyectos</a>
             <a href="<?php echo home_url('/timeline-usuarios'); ?>">Usuarios</a>
+            <a href="<?php echo home_url('/timeline-audit-log'); ?>">Auditoría</a>
             <a href="<?php echo home_url('/timeline-perfil'); ?>">Perfil</a>
         </div>
-        <div class="navbar-user">
+        
+        <div class="navbar-user" id="navbarUser">
             <div class="user-info">
                 <div class="user-name"><?php echo esc_html($current_user->username); ?></div>
                 <div class="user-role">
@@ -385,12 +498,11 @@
     <div class="container">
         <div class="page-header">
             <h1>Proyectos</h1>
-            <div style="display: flex; gap: 20px; align-items: center;">
+            <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
                 <select id="client-filter" style="padding: 12px 40px 12px 20px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; appearance: none; background-image: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'12\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'rgba(255,255,255,0.4)\' d=\'M6 9L1 4h10z\'/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 15px center; background-color: rgba(0,0,0,0.3);">
                     <option value="all">Todos los proyectos</option>
                     <option value="unassigned">Sin clientes asignados</option>
                     <?php
-                    // Obtener todos los clientes
                     if ($projects_class) {
                         $all_clients = $projects_class->get_available_clients();
                         foreach ($all_clients as $client) {
@@ -434,7 +546,6 @@
                     $clients = $projects_class->get_project_clients($project->id);
                     $image = $project->featured_image ? $project->featured_image : 'https://via.placeholder.com/400x250/1a1a1a/666666?text=Sin+Imagen';
 
-                    // Mapear estado del proyecto
                     $status_labels = [
                         'en_proceso' => 'EN PROCESO',
                         'pendiente' => 'PENDIENTE',
@@ -476,9 +587,7 @@
                                         <span class="client-tag"><?php echo esc_html($client->username); ?></span>
                                     <?php endforeach; ?>
                                 </div>
-                                <?php
-                                $client_ids_str = !empty($client_ids) ? implode(',', $client_ids) : 'none';
-                                ?>
+                                <?php $client_ids_str = !empty($client_ids) ? implode(',', $client_ids) : 'none'; ?>
                             <?php else: ?>
                                 <?php $client_ids_str = 'none'; ?>
                             <?php endif; ?>
@@ -502,6 +611,25 @@
     </div>
 
     <script>
+        function toggleMobileMenu() {
+            const toggle = document.getElementById('mobileMenuToggle');
+            const menu = document.getElementById('navbarMenu');
+            const user = document.getElementById('navbarUser');
+            
+            toggle.classList.toggle('active');
+            menu.classList.toggle('active');
+            user.classList.toggle('active');
+        }
+        
+        // Cerrar menú al hacer clic en un enlace (en móvil)
+        document.querySelectorAll('.navbar-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+        
         // Filtro de proyectos por cliente
         document.getElementById('client-filter').addEventListener('change', function() {
             const filterValue = this.value;
@@ -514,13 +642,10 @@
                 const clientIds = clientsData.value;
 
                 if (filterValue === 'all') {
-                    // Mostrar todos
                     card.style.display = '';
                 } else if (filterValue === 'unassigned') {
-                    // Mostrar solo sin clientes
                     card.style.display = (clientIds === 'none') ? '' : 'none';
                 } else {
-                    // Filtrar por cliente específico
                     if (clientIds === 'none') {
                         card.style.display = 'none';
                     } else {

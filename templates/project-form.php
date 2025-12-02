@@ -376,11 +376,7 @@ $page_title = $is_edit ? 'Editar Proyecto' : 'Nuevo Proyecto';
 <body>
     <nav class="navbar">
         <div class="navbar-brand">BeBuilt</div>
-        <div class="navbar-menu">
-            <a href="<?php echo home_url('/timeline-dashboard'); ?>">Dashboard</a>
-            <a href="<?php echo home_url('/timeline-proyectos'); ?>" class="active">Proyectos</a>
-            <a href="<?php echo home_url('/timeline-usuarios'); ?>">Usuarios</a>
-        </div>
+        
     </nav>
 
     <div class="container">

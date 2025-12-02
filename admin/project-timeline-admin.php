@@ -378,6 +378,12 @@ $milestones = $milestones_class->get_project_milestones_with_images($project_id)
             align-items: center;
             justify-content: center;
         }
+
+        @media (max-width: 768px){
+            .milestone-card {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>

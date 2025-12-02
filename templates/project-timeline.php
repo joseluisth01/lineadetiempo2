@@ -735,10 +735,21 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 left: 30px;
             }
 
+            .container {
+            max-width: 90%;
+            margin: 0 auto;
+            padding: 0px;
+            margin-top: 30px;
+        }
+
             .milestone-card {
                 padding-left: 60px !important;
                 padding-right: 0 !important;
                 justify-content: flex-start !important;
+            }
+
+            .titulodescarga{
+                font-size: 24px !important;
             }
 
             .milestone-card::after {
@@ -769,14 +780,32 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 padding: 30px;
             }
 
-            .modal-top-bar {
+            .anchomodal{
                 flex-direction: column;
+            }
+            .anchomodal div{
+                width: 100%;
+            }
+
+            .milestone-nav-arrows{
+                position: relative;
+                padding: 0px;
+                margin-top: 20px;
+            }
+
+            .modal-top-bar {
                 align-items: stretch;
             }
 
             .milestone-nav-arrows {
                 width: 100%;
-                padding: 20px;
+                padding: 0px;
+                margin-top: 25px;
+                padding-top: 20px;
+            }
+
+            .modal-info{
+                padding-bottom: 0px;
             }
 
 
@@ -884,7 +913,7 @@ if (count($documents) > 0):
 ?>
 <div style="padding: 50px; margin-top: 100px; background-image: url('https://www.bebuilt.es/wp-content/uploads/2025/12/Background.webp'); background-size: cover; background-position: center;">
     <div style="padding:50px; border-radius: 30px;background: rgba(0, 0, 0, 0.55);">
-        <h2 style="text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 15px; color:white">
+        <h2 class="titulodescarga" style="text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 15px; color:white">
             Descarga <span style="font-weight: 400;">cualquiera de los documentos</span> del proyecto
         </h2>
         
@@ -934,7 +963,7 @@ if (count($documents) > 0):
                 </div>
             </div>
 
-            <div style="display: flex; gap: 15px; justify-content:space-between;">
+            <div class="anchomodal" style="display: flex; gap: 15px; justify-content:space-between;">
                 <div class="modal-info">
                     <h2 class="modal-title" id="modal-title"></h2>
                     <div class="modal-description" id="modal-description"></div>
