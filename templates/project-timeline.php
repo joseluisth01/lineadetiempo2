@@ -34,12 +34,22 @@ if ($current_user->role === 'cliente') {
 
 $milestones = $milestones_class->get_project_milestones_with_images($project_id);
 
-// Calcular duración del proyecto
 $start = new DateTime($project->start_date);
 $end = new DateTime($project->end_date);
 $actual_end = $project->actual_end_date ? new DateTime($project->actual_end_date) : $end;
 $total_days = $start->diff($actual_end)->days;
 $is_extended = $project->actual_end_date && $actual_end > $end;
+
+// Calcular el índice del último hito dentro del plazo
+$last_in_time_index = -1;
+foreach ($milestones as $index => $milestone) {
+    $milestone_date = new DateTime($milestone->date);
+    if ($milestone_date <= $end) {
+        $last_in_time_index = $index;
+    }
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -266,13 +276,37 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         }
 
         .vertical-timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: black;
+    transform: translateX(-50%);
+    z-index: 0;
+}
+
+        /* Línea continua hasta el último hito dentro del plazo */
+        .vertical-timeline.has-extension::before {
+            height: var(--line-end-position);
+            background: black;
+        }
+
+        /* Línea discontinua después del plazo */
+        .vertical-timeline.has-extension::after {
             content: '';
             position: absolute;
             left: 50%;
-            top: 0;
+            top: var(--line-end-position);
+            margin-top: 20px;
             bottom: 0;
             width: 2px;
-            background: black;
+            background-image: repeating-linear-gradient(to bottom,
+                    black 0px,
+                    black 10px,
+                    transparent 10px,
+                    transparent 20px);
             transform: translateX(-50%);
             z-index: 0;
         }
@@ -730,17 +764,46 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
             cursor: not-allowed;
         }
 
+        @media (max-width: 1100px){
+.milestone-inner{
+    flex-direction: column;
+}
+.milestone-card:nth-child(even) .milestone-inner{
+    flex-direction: column;
+}
+        }
+
         @media (max-width: 768px) {
             .vertical-timeline::before {
                 left: 30px;
             }
 
             .container {
-            max-width: 90%;
-            margin: 0 auto;
-            padding: 0px;
-            margin-top: 30px;
-        }
+                max-width: 90%;
+                margin: 0 auto;
+                padding: 0px;
+                margin-top: 30px;
+            }
+
+            .milestone-card:nth-child(even)::after{
+                left: 30px;
+            }
+
+            .vertical-timeline.has-extension::after{
+                left:30px;
+                margin-top: 20px;
+            }
+
+            .milestone-card:nth-child(even)::before{
+                left: 30px;
+            }
+            .milestone-card:nth-child(odd)::before{
+                left: 30px;
+            }
+
+            .milestone-card:nth-child(odd)::after{
+                left: 30px;
+            }
 
             .milestone-card {
                 padding-left: 60px !important;
@@ -748,7 +811,7 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 justify-content: flex-start !important;
             }
 
-            .titulodescarga{
+            .titulodescarga {
                 font-size: 24px !important;
             }
 
@@ -780,14 +843,16 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 padding: 30px;
             }
 
-            .anchomodal{
+            .anchomodal {
                 flex-direction: column;
             }
-            .anchomodal div{
+
+            .anchomodal div {
                 width: 100%;
+                text-align: justify;
             }
 
-            .milestone-nav-arrows{
+            .milestone-nav-arrows {
                 position: relative;
                 padding: 0px;
                 margin-top: 20px;
@@ -795,6 +860,22 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
 
             .modal-top-bar {
                 align-items: stretch;
+                flex-direction: column;
+                padding-bottom: 0px;
+            }
+
+            .modal-top-left{
+                order: 2;
+                justify-content: space-between;
+            }
+
+            .milestone-nav-btn{
+                padding: 12px;
+            }
+
+            .modal-top-right{
+                width: 100%;
+                justify-content: space-between;
             }
 
             .milestone-nav-arrows {
@@ -804,14 +885,14 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
                 padding-top: 20px;
             }
 
-            .modal-info{
+            .modal-info {
                 padding-bottom: 0px;
             }
 
 
 
             .timeline-top-item {
-                min-width: 80px;
+                min-width: 105px;
             }
         }
     </style>
@@ -847,7 +928,11 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
         <h1 style="text-align:center"><?php echo esc_html($project->name); ?></h1><br>
         <p style="text-align:center"><?php echo esc_html($project->description); ?></p><br>
 
-        <div class="vertical-timeline" id="verticalTimeline">
+        <div class="vertical-timeline <?php echo ($last_in_time_index >= 0 && $last_in_time_index < count($milestones) - 1) ? 'has-extension' : ''; ?>"
+            id="verticalTimeline"
+            <?php if ($last_in_time_index >= 0 && $last_in_time_index < count($milestones) - 1): ?>
+            style="--line-end-position: <?php echo (($last_in_time_index + 0.5) / count($milestones)) * 100; ?>%;"
+            <?php endif; ?>>
             <?php foreach ($milestones as $index => $milestone): ?>
                 <?php
                 $date = new DateTime($milestone->date);
@@ -905,38 +990,38 @@ $is_extended = $project->actual_end_date && $actual_end > $end;
     </div>
 
 
-<?php
-$documents_class = Timeline_Documents::get_instance();
-$documents = $documents_class->get_project_documents($project_id);
+    <?php
+    $documents_class = Timeline_Documents::get_instance();
+    $documents = $documents_class->get_project_documents($project_id);
 
-if (count($documents) > 0):
-?>
-<div style="padding: 50px; margin-top: 100px; background-image: url('https://www.bebuilt.es/wp-content/uploads/2025/12/Background.webp'); background-size: cover; background-position: center;">
-    <div style="padding:50px; border-radius: 30px;background: rgba(0, 0, 0, 0.55);">
-        <h2 class="titulodescarga" style="text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 15px; color:white">
-            Descarga <span style="font-weight: 400;">cualquiera de los documentos</span> del proyecto
-        </h2>
-        
-        <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; margin-top:50px; max-width: 1200px; margin-left: auto; margin-right: auto;">
-            <?php foreach ($documents as $doc): ?>
-                <a href="<?php echo esc_url($doc->file_url); ?>" 
-                   download 
-                   target="_blank"
-                   style="text-decoration: none; text-align: center; transition: transform 0.3s; width: 180px;"
-                   onmouseover="this.style.transform='translateY(-5px)'"
-                   onmouseout="this.style.transform='translateY(0)'">
-                    <div style="width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                        <img src="https://www.bebuilt.es/wp-content/uploads/2025/12/Vector-21.svg" alt="Descargar" style="width: 90%;">
-                    </div>
-                    <div style="color: white; font-size: 17px; font-weight: 600; max-width: 180px; word-wrap: break-word; margin: 0 auto;">
-                        <?php echo esc_html($doc->title); ?>
-                    </div>
-                </a>
-            <?php endforeach; ?>
+    if (count($documents) > 0):
+    ?>
+        <div style="padding: 50px; margin-top: 100px; background-image: url('https://www.bebuilt.es/wp-content/uploads/2025/12/Background.webp'); background-size: cover; background-position: center;">
+            <div style="padding:50px; border-radius: 30px;background: rgba(0, 0, 0, 0.55);">
+                <h2 class="titulodescarga" style="text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 15px; color:white">
+                    Descarga <span style="font-weight: 400;">cualquiera de los documentos</span> del proyecto
+                </h2>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; margin-top:50px; max-width: 1200px; margin-left: auto; margin-right: auto;">
+                    <?php foreach ($documents as $doc): ?>
+                        <a href="<?php echo esc_url($doc->file_url); ?>"
+                            download
+                            target="_blank"
+                            style="text-decoration: none; text-align: center; transition: transform 0.3s; width: 180px;"
+                            onmouseover="this.style.transform='translateY(-5px)'"
+                            onmouseout="this.style.transform='translateY(0)'">
+                            <div style="width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                                <img src="https://www.bebuilt.es/wp-content/uploads/2025/12/Vector-21.svg" alt="Descargar" style="width: 90%;">
+                            </div>
+                            <div style="color: white; font-size: 17px; font-weight: 600; max-width: 180px; word-wrap: break-word; margin: 0 auto;">
+                                <?php echo esc_html($doc->title); ?>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-<?php endif; ?>
+    <?php endif; ?>
 
 
     <!-- Modal de hito -->
@@ -985,7 +1070,7 @@ if (count($documents) > 0):
         </div>
     </div>
 
-    
+
 
     <script>
         const milestones = <?php echo json_encode($milestones); ?>;
