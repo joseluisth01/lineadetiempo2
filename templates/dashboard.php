@@ -428,7 +428,7 @@
                     ?>
                 </div>
             </div>
-            <a href="<?php echo admin_url('admin-post.php?action=timeline_logout'); ?>" class="btn-logout">
+            <a href="<?php echo home_url('/timeline-logout'); ?>" class="btn-logout">
                 Salir
             </a>
         </div>

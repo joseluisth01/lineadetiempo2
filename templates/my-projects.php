@@ -22,7 +22,7 @@
 
         /* NAVBAR */
         .navbar {
-            background: #ffffff;
+            background: black;
             border-bottom: 1px solid #e0e0e0;
             padding: 20px 40px;
             display: flex;
@@ -30,6 +30,8 @@
             align-items: center;
             position: relative;
             z-index: 9999;
+            position: fixed;
+            width: 100%;
         }
 
         .navbar-brand {
@@ -37,7 +39,7 @@
             font-weight: 600;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: #000;
+            color: white;
             z-index: 1001;
         }
 
@@ -48,7 +50,7 @@
         }
 
         .navbar-menu a {
-            color: #666;
+            color: white;
             text-decoration: none;
             font-size: 12px;
             letter-spacing: 1.5px;
@@ -60,7 +62,7 @@
 
         .navbar-menu a:hover,
         .navbar-menu a.active {
-            color: #000;
+            color: white;
         }
 
         .navbar-user {
@@ -70,12 +72,12 @@
         }
 
         .user-info { text-align: right; }
-        .user-name { font-size: 14px; font-weight: 500; color: #000; }
+        .user-name { font-size: 14px; font-weight: 500; color: white; }
 
         .btn-logout {
             background: transparent;
-            border: 1px solid #000;
-            color: #000;
+            border: 1px solid white;
+            color: white;
             padding: 8px 20px;
             font-size: 11px;
             letter-spacing: 1.5px;
@@ -105,13 +107,18 @@
         .mobile-menu-toggle span {
             width: 26px;
             height: 3px;
-            background: #000;
+            background: white;
             transition: all 0.3s;
         }
 
         .mobile-menu-toggle.active span:nth-child(1) {
             transform: rotate(45deg) translate(7px, 7px);
         }
+
+        .navbar-brand img{
+                height: 30px;
+                width: auto;
+            }
 
         .mobile-menu-toggle.active span:nth-child(2) {
             opacity: 0;
@@ -132,7 +139,7 @@
                 right: -100%;
                 width: 280px;
                 height: 100vh;
-                background: rgba(255,255,255,0.98);
+                background: black;
                 backdrop-filter: blur(20px);
                 flex-direction: column;
                 align-items: flex-start;
@@ -150,6 +157,8 @@
             display: flex;
             }
 
+            
+
             .navbar-menu a {
                 width: 100%;
                 padding: 12px 0;
@@ -162,7 +171,7 @@
                 bottom: 0;
                 right: -100%;
                 width: 280px;
-                background: rgba(255,255,255,0.98);
+                background: black;
                 backdrop-filter: blur(20px);
                 flex-direction: column;
                 padding: 25px 30px;
@@ -196,6 +205,7 @@
         .intro-section {
             text-align: center;
             margin-bottom: 80px;
+            margin-top: 80px;
         }
 
         .intro-section h1 {
@@ -208,7 +218,7 @@
 
         .intro-section p {
             font-size: 16px;
-            color: #666;
+            color: black;
             line-height: 1.6;
         }
 
@@ -227,6 +237,11 @@
             overflow: hidden;
         }
 
+        .project-card:first-child .btn-view-project{
+            margin: 0 auto;
+            width: 40%;
+        }
+
         .project-status {
             position: absolute;
             top: 12px;
@@ -234,8 +249,9 @@
             background: #000;
             color: #fff;
             padding: 8px 16px;
-            font-size: 11px;
-            font-weight: 600;
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: 1px;
             border-radius: 10px;
             text-transform: uppercase;
         }
@@ -270,12 +286,23 @@
             text-transform: uppercase;
             text-decoration: none;
             border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-view-project:hover {
+            background: black;
+            color: #FDC425;
         }
 
         @media (max-width: 768px) {
             .container { padding: 40px 20px; }
             .intro-section h1 { font-size: 32px; }
             .projects-grid { grid-template-columns: 1fr; }
+
+            .project-card:first-child .btn-view-project{
+            margin: 0 auto;
+            width: 100%;
+        }
         }
     </style>
 </head>
@@ -283,7 +310,7 @@
 <body>
 
     <nav class="navbar">
-        <div class="navbar-brand">BeBuilt</div>
+        <div class="navbar-brand"><img src="https://www.bebuilt.es/wp-content/uploads/2025/12/logo-bebuilt-blanco.png" alt=""></div>
 
         <!-- HAMBURGER -->
         <div class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobile()">
@@ -307,7 +334,7 @@
 
         <div class="intro-section">
             <h1>Explora <span class="highlight">tus proyectos</span></h1>
-            <p>Esta es tu <strong>área de proyectos</strong>. Aquí puedes acceder a toda la información sobre cada obra.</p>
+            <p>Esta es tu <strong>área de proyectos</strong>, aquí puedes acceder a <strong>toda la información</strong> sobre cada obra, ya esté finalizada o en proceso.</p>
         </div>
 
         <div class="projects-grid">

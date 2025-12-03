@@ -14,20 +14,25 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-            <?php if ($current_user->role === 'cliente'): ?>background: #ffffff;
+            <?php if ($current_user->role === 'cliente'): ?>
+            background: #ffffff;
             color: #000000;
-            <?php else: ?>background: #0a0a0a;
+            <?php else: ?>
+            background: #0a0a0a;
             color: #ffffff;
             <?php endif; ?>
         }
 
         .navbar {
-            <?php if ($current_user->role === 'cliente'): ?>background: #ffffff;
+            <?php if ($current_user->role === 'cliente'): ?>
+            background: #000000;
             border-bottom: 1px solid #e0e0e0;
-            <?php else: ?>background: rgba(255, 255, 255, 0.02);
+            <?php else: ?>
+            background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            <?php endif; ?>padding: 20px 40px;
+            <?php endif; ?>
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -40,9 +45,16 @@
             font-weight: <?php echo $current_user->role === 'cliente' ? '600' : '300'; ?>;
             letter-spacing: <?php echo $current_user->role === 'cliente' ? '2px' : '3px'; ?>;
             text-transform: uppercase;
-            color: <?php echo $current_user->role === 'cliente' ? '#000' : 'rgba(255, 255, 255, 0.9)'; ?>;
+            color: <?php echo $current_user->role === 'cliente' ? '#fff' : 'rgba(255, 255, 255, 0.9)'; ?>;
             z-index: 1001;
         }
+
+        <?php if ($current_user->role === 'cliente'): ?>
+        .navbar-brand img {
+            height: 30px;
+            width: auto;
+        }
+        <?php endif; ?>
 
         .navbar-menu {
             display: flex;
@@ -51,9 +63,12 @@
         }
 
         .navbar-menu a {
-            <?php if ($current_user->role === 'cliente'): ?>color: #666;
-            <?php else: ?>color: rgba(255, 255, 255, 0.6);
-            <?php endif; ?>text-decoration: none;
+            <?php if ($current_user->role === 'cliente'): ?>
+            color: #ffffff;
+            <?php else: ?>
+            color: rgba(255, 255, 255, 0.6);
+            <?php endif; ?>
+            text-decoration: none;
             font-size: 12px;
             letter-spacing: <?php echo $current_user->role === 'cliente' ? '1.5px' : '2px'; ?>;
             text-transform: uppercase;
@@ -64,8 +79,10 @@
 
         .navbar-menu a:hover,
         .navbar-menu a.active {
-            <?php if ($current_user->role === 'cliente'): ?>color: #000;
-            <?php else: ?>color: rgba(200, 150, 100, 0.9);
+            <?php if ($current_user->role === 'cliente'): ?>
+            color: #ffffff;
+            <?php else: ?>
+            color: rgba(200, 150, 100, 0.9);
             <?php endif; ?>
         }
 
@@ -82,13 +99,13 @@
         .user-name {
             font-size: <?php echo $current_user->role === 'cliente' ? '14px' : '13px'; ?>;
             font-weight: <?php echo $current_user->role === 'cliente' ? '500' : '300'; ?>;
-            color: <?php echo $current_user->role === 'cliente' ? '#000' : 'rgba(255, 255, 255, 0.9)'; ?>;
+            color: <?php echo $current_user->role === 'cliente' ? '#ffffff' : 'rgba(255, 255, 255, 0.9)'; ?>;
             letter-spacing: 1px;
         }
 
         .user-role {
             font-size: 10px;
-            color: <?php echo $current_user->role === 'cliente' ? '#999' : 'rgba(255, 255, 255, 0.4)'; ?>;
+            color: <?php echo $current_user->role === 'cliente' ? '#cccccc' : 'rgba(255, 255, 255, 0.4)'; ?>;
             letter-spacing: 1.5px;
             text-transform: uppercase;
             margin-top: 2px;
@@ -96,8 +113,8 @@
 
         .btn-logout {
             background: transparent;
-            border: 1px solid <?php echo $current_user->role === 'cliente' ? '#000' : 'rgba(255, 255, 255, 0.2)'; ?>;
-            color: <?php echo $current_user->role === 'cliente' ? '#000' : 'rgba(255, 255, 255, 0.7)'; ?>;
+            border: 1px solid <?php echo $current_user->role === 'cliente' ? '#ffffff' : 'rgba(255, 255, 255, 0.2)'; ?>;
+            color: <?php echo $current_user->role === 'cliente' ? '#ffffff' : 'rgba(255, 255, 255, 0.7)'; ?>;
             padding: 8px 20px;
             font-size: 11px;
             letter-spacing: <?php echo $current_user->role === 'cliente' ? '1.5px' : '2px'; ?>;
@@ -111,9 +128,11 @@
         }
 
         .btn-logout:hover {
-            <?php if ($current_user->role === 'cliente'): ?>background: #000;
-            color: #fff;
-            <?php else: ?>border-color: rgba(200, 150, 100, 0.5);
+            <?php if ($current_user->role === 'cliente'): ?>
+            background: #ffffff;
+            color: #000000;
+            <?php else: ?>
+            border-color: rgba(200, 150, 100, 0.5);
             color: rgba(200, 150, 100, 0.9);
             <?php endif; ?>
         }
@@ -131,7 +150,7 @@
         .mobile-menu-toggle span {
             width: 25px;
             height: 2px;
-            background: <?php echo $current_user->role === 'cliente' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)'; ?>;
+            background: <?php echo $current_user->role === 'cliente' ? '#ffffff' : 'rgba(255, 255, 255, 0.8)'; ?>;
             transition: all 0.3s;
         }
 
@@ -169,10 +188,13 @@
             margin-bottom: 40px;
             font-size: 12px;
             border-left: 1px solid;
-            <?php if ($current_user->role === 'cliente'): ?>background: #f8f9fa;
-            <?php else: ?>background: rgba(255, 255, 255, 0.03);
+            <?php if ($current_user->role === 'cliente'): ?>
+            background: #f8f9fa;
+            <?php else: ?>
+            background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
-            <?php endif; ?>letter-spacing: 0.5px;
+            <?php endif; ?>
+            letter-spacing: 0.5px;
         }
 
         .alert-success {
@@ -186,13 +208,16 @@
         }
 
         .card {
-            <?php if ($current_user->role === 'cliente'): ?>background: #ffffff;
+            <?php if ($current_user->role === 'cliente'): ?>
+            background: #ffffff;
             border: 1px solid #e0e0e0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            <?php else: ?>background: rgba(255, 255, 255, 0.02);
+            <?php else: ?>
+            background: rgba(255, 255, 255, 0.02);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            <?php endif; ?>padding: 50px 40px;
+            <?php endif; ?>
+            padding: 50px 40px;
             margin-bottom: 30px;
         }
 
@@ -248,15 +273,18 @@
         .form-group input {
             width: 100%;
             padding: 14px 0;
-            <?php if ($current_user->role === 'cliente'): ?>background: #ffffff;
+            <?php if ($current_user->role === 'cliente'): ?>
+            background: #ffffff;
             border: none;
             border-bottom: 1px solid #e0e0e0;
             color: #000;
-            <?php else: ?>background: transparent;
+            <?php else: ?>
+            background: transparent;
             border: none;
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
             color: #ffffff;
-            <?php endif; ?>font-size: 14px;
+            <?php endif; ?>
+            font-size: 14px;
             font-weight: 300;
             transition: border-color 0.3s;
         }
@@ -276,13 +304,16 @@
         .btn-primary {
             width: 100%;
             padding: 16px;
-            <?php if ($current_user->role === 'cliente'): ?>background: #FDC425;
+            <?php if ($current_user->role === 'cliente'): ?>
+            background: #FDC425;
             color: #000;
             border: 1px solid #FDC425;
-            <?php else: ?>background: rgba(255, 255, 255, 0.05);
+            <?php else: ?>
+            background: rgba(255, 255, 255, 0.05);
             color: #ffffff;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            <?php endif; ?>font-size: 11px;
+            <?php endif; ?>
+            font-size: 11px;
             font-weight: 400;
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -292,8 +323,10 @@
         }
 
         .btn-primary:hover {
-            <?php if ($current_user->role === 'cliente'): ?>background: #e5b01f;
-            <?php else: ?>background: rgba(200, 150, 100, 0.15);
+            <?php if ($current_user->role === 'cliente'): ?>
+            background: #e5b01f;
+            <?php else: ?>
+            background: rgba(200, 150, 100, 0.15);
             border-color: rgba(200, 150, 100, 0.5);
             <?php endif; ?>
         }
@@ -306,6 +339,7 @@
 
             .profile {
                 display: block !important;
+                margin-top: 40px;
             }
 
             .mobile-menu-toggle {
@@ -319,12 +353,15 @@
                 width: 280px;
                 height: 100vh;
                 display: none;
-                <?php if ($current_user->role === 'cliente'): ?>background: rgba(255, 255, 255, 0.98);
-                border-left: 1px solid #e0e0e0;
-                <?php else: ?>background: rgba(10, 10, 10, 0.98);
+                <?php if ($current_user->role === 'cliente'): ?>
+                background: rgba(0, 0, 0, 0.98);
+                border-left: 1px solid #333;
+                <?php else: ?>
+                background: rgba(10, 10, 10, 0.98);
                 backdrop-filter: blur(20px);
                 border-left: 1px solid rgba(255, 255, 255, 0.1);
-                <?php endif; ?>flex-direction: column;
+                <?php endif; ?>
+                flex-direction: column;
                 padding: 80px 30px 30px;
                 gap: 25px;
                 align-items: flex-start;
@@ -342,7 +379,10 @@
                 font-size: 14px;
                 width: 100%;
                 padding: 10px 0;
-                border-bottom: 1px solid <?php echo $current_user->role === 'cliente' ? '#f0f0f0' : 'rgba(255, 255, 255, 0.05)'; ?>;
+                border-bottom: 1px solid <?php echo $current_user->role === 'cliente' ? '#333' : 'rgba(255, 255, 255, 0.05)'; ?>;
+                <?php if ($current_user->role === 'cliente'): ?>
+                color: #ffffff;
+                <?php endif; ?>
             }
 
             .navbar-user {
@@ -352,15 +392,17 @@
                 right: -100%;
                 width: 280px;
                 display: none;
-                /* CLIENTE */
-                <?php if ($current_user->role === 'cliente'): ?>background: rgba(250, 250, 250, 0.98);
-                border-left: 1px solid #e0e0e0;
-                border-top: 1px solid #e0e0e0;
-                <?php else: ?>background: rgba(15, 15, 15, 0.98);
+                <?php if ($current_user->role === 'cliente'): ?>
+                background: rgba(0, 0, 0, 0.98);
+                border-left: 1px solid #333;
+                border-top: 1px solid #333;
+                <?php else: ?>
+                background: rgba(15, 15, 15, 0.98);
                 backdrop-filter: blur(20px);
                 border-left: 1px solid rgba(255, 255, 255, 0.1);
                 border-top: 1px solid rgba(255, 255, 255, 0.1);
-                <?php endif; ?>flex-direction: column;
+                <?php endif; ?>
+                flex-direction: column;
                 padding: 25px 30px;
                 gap: 20px;
                 align-items: stretch;
@@ -376,22 +418,32 @@
             .user-info {
                 text-align: left;
                 padding-bottom: 15px;
-                border-bottom: 1px solid <?php echo $current_user->role === 'cliente' ? '#e0e0e0' : 'rgba(255,255,255,0.1)'; ?>;
+                border-bottom: 1px solid <?php echo $current_user->role === 'cliente' ? '#333' : 'rgba(255,255,255,0.1)'; ?>;
             }
 
             .user-name {
                 font-size: 15px;
+                <?php if ($current_user->role === 'cliente'): ?>
+                color: #ffffff;
+                <?php endif; ?>
             }
 
             .user-role {
                 font-size: 11px;
                 margin-top: 5px;
+                <?php if ($current_user->role === 'cliente'): ?>
+                color: #cccccc;
+                <?php endif; ?>
             }
 
             .btn-logout {
                 width: 100%;
                 padding: 12px 20px;
                 text-align: center;
+                <?php if ($current_user->role === 'cliente'): ?>
+                color: #ffffff;
+                border-color: #ffffff;
+                <?php endif; ?>
             }
 
             .container {
@@ -420,7 +472,13 @@
 
 <body>
     <nav class="navbar">
-        <div class="navbar-brand">BeBuilt</div>
+        <?php if ($current_user->role === 'cliente'): ?>
+            <div class="navbar-brand">
+                <img src="https://www.bebuilt.es/wp-content/uploads/2025/12/logo-bebuilt-blanco.png" alt="BeBuilt">
+            </div>
+        <?php else: ?>
+            <div class="navbar-brand">BeBuilt</div>
+        <?php endif; ?>
 
         <!-- Hamburger Menu -->
         <div class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
@@ -477,8 +535,11 @@
                 }
 
                 .profile a {
-
+                    <?php if ($current_user->role === 'cliente'): ?>
+                    color: #ffffff;
+                    <?php else: ?>
                     color: #666;
+                    <?php endif; ?>
                     text-decoration: none;
                     font-size: 12px;
                     letter-spacing: 1.5px;
@@ -489,7 +550,7 @@
                     font-size: 14px;
                     width: 100%;
                     padding: 10px 0;
-                    border-bottom: 1px solid #f0f0f0;
+                    border-bottom: 1px solid <?php echo $current_user->role === 'cliente' ? '#333' : '#f0f0f0'; ?>;
                 }
             </style>
         </div>

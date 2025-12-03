@@ -72,7 +72,7 @@ foreach ($milestones as $index => $milestone) {
         }
 
         .navbar {
-            background: #ffffff;
+            background: black;
             border-bottom: 1px solid #e0e0e0;
             padding: 20px 40px;
             display: flex;
@@ -85,13 +85,13 @@ foreach ($milestones as $index => $milestone) {
             font-weight: 600;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: #000;
+            color: white;
         }
 
         .btn-back {
             background: transparent;
-            border: 1px solid #000;
-            color: #000;
+            border: 1px solid white;
+            color: white;
             padding: 8px 20px;
             font-size: 11px;
             letter-spacing: 1.5px;
@@ -103,8 +103,8 @@ foreach ($milestones as $index => $milestone) {
         }
 
         .btn-back:hover {
-            background: #000;
-            color: #fff;
+            background: white;
+            color: black;
         }
 
         .header-section {
@@ -129,11 +129,19 @@ foreach ($milestones as $index => $milestone) {
             max-width: 80%;
             margin: 0 auto;
             padding: 80px 40px;
+            margin-top: 120px;
         }
 
         .timeline-wrapper {
             position: relative;
             margin: 80px 0;
+        }
+
+        .timeline-top-item:first-of-type{
+                border-left: 3px solid black;
+        }
+        .timeline-top-item:last-of-type{
+            border-right: 3px solid black;
         }
 
         /* ===== BARRA DE TIMELINE SUPERIOR ===== */
@@ -256,9 +264,6 @@ foreach ($milestones as $index => $milestone) {
             background: #FFDE88;
         }
 
-        .timeline-top-item:hover .timeline-top-date {
-            font-weight: 700;
-        }
 
         .timeline-top-item.active .timeline-top-point {
             background-color: #000;
@@ -615,6 +620,15 @@ foreach ($milestones as $index => $milestone) {
             cursor: pointer;
         }
 
+        .timeline-top-item.status-pendiente .timeline-top-date {
+    pointer-events: none !important; /* Desactiva eventos del mouse */
+}
+
+.timeline-top-item.status-pendiente:hover {
+    transform: none !important;
+     pointer-events: none !important;
+}
+
         .carousel-nav-btn:hover:not(:disabled) {
             opacity: 0.8;
         }
@@ -780,6 +794,18 @@ foreach ($milestones as $index => $milestone) {
             opacity: 0.8;
         }
 
+        .navbar-brand img {
+            height: 30px;
+            width: auto;
+        }
+
+        .fijo-top{
+            position: fixed;
+            top: 0px;
+            width: 100%;
+            z-index: 999999999999999999999999999999999999;
+        }
+
         .milestone-nav-btn:disabled {
             opacity: 0.3;
             cursor: not-allowed;
@@ -804,7 +830,6 @@ foreach ($milestones as $index => $milestone) {
                 max-width: 90%;
                 margin: 0 auto;
                 padding: 0px;
-                margin-top: 30px;
             }
 
             .milestone-card:nth-child(even)::after {
@@ -922,30 +947,35 @@ foreach ($milestones as $index => $milestone) {
 </head>
 
 <body>
-    <nav class="navbar">
-        <div class="navbar-brand">BeBuilt</div>
-        <a href="<?php echo home_url('/timeline-mis-proyectos'); ?>" class="btn-back">← Mis Proyectos</a>
-    </nav>
+    <div class="fijo-top">
+        <nav class="navbar">
+            <div class="navbar-brand"><img src="https://www.bebuilt.es/wp-content/uploads/2025/12/logo-bebuilt-blanco.png" alt=""></div>
+            <a href="<?php echo home_url('/timeline-mis-proyectos'); ?>" class="btn-back">← Mis Proyectos</a>
+        </nav>
 
-    <div class="timeline-bar-container" id="timelineBarContainer">
-        <div class="timeline-bar"></div>
-        <div class="timeline-bar-inner" id="timelineBarInner">
-            <?php foreach ($milestones as $index => $milestone): ?>
-                <?php
-                $date = new DateTime($milestone->date);
-                $status_class = 'status-' . esc_attr($milestone->status);
-                ?>
-                <div class="timeline-top-item <?php echo $status_class; ?>"
-                    data-milestone-index="<?php echo $index; ?>"
-                    onclick="scrollToMilestone(<?php echo $index; ?>)">
-                    <div class="timeline-top-point"></div>
-                    <div class="timeline-top-date">
-                        <?php echo $date->format('d/m/Y'); ?>
+        <div class="timeline-bar-container" id="timelineBarContainer">
+            <div class="timeline-bar"></div>
+            <div class="timeline-bar-inner" id="timelineBarInner">
+                <?php foreach ($milestones as $index => $milestone): ?>
+                    <?php
+                    $date = new DateTime($milestone->date);
+                    $status_class = 'status-' . esc_attr($milestone->status);
+                    ?>
+                    <div class="timeline-top-item <?php echo $status_class; ?>"
+    data-milestone-index="<?php echo $index; ?>"
+    <?php if ($milestone->status !== 'pendiente'): ?>
+        onclick="scrollToMilestone(<?php echo $index; ?>)"
+    <?php endif; ?>>
+                        <div class="timeline-top-point"></div>
+                        <div class="timeline-top-date">
+                            <?php echo $date->format('d/m/Y'); ?>
+                        </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
+
 
     <div class="container">
         <h1 style="text-align:center"><?php echo esc_html($project->name); ?></h1><br>
