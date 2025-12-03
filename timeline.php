@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: Timeline - Sistema de Gestión de Proyectos
  * Description: Sistema completo de gestión de proyectos con línea de tiempo, hitos y auditoría
@@ -140,6 +141,7 @@ class Timeline_Plugin
     public function add_rewrite_rules()
     {
         add_rewrite_rule('^login-proyectos/?$', 'index.php?timeline_page=login', 'top');
+        add_rewrite_rule('^timeline-logout/?$', 'index.php?timeline_page=logout', 'top'); // NUEVA LÍNEA
         add_rewrite_rule('^timeline-dashboard/?$', 'index.php?timeline_page=dashboard', 'top');
         add_rewrite_rule('^timeline-usuarios/?$', 'index.php?timeline_page=users', 'top');
         add_rewrite_rule('^timeline-perfil/?$', 'index.php?timeline_page=profile', 'top');
@@ -208,6 +210,10 @@ class Timeline_Plugin
                     exit;
                 }
                 $this->load_template('login');
+                break;
+
+            case 'logout':
+                $this->handle_logout();
                 break;
 
             case 'dashboard':
@@ -306,7 +312,7 @@ class Timeline_Plugin
                     wp_redirect(home_url('/timeline-dashboard'));
                     exit;
                 }
-                
+
                 // REGISTRAR VISUALIZACIÓN DEL PROYECTO
                 $current_user = $this->get_current_user();
                 if ($this->audit_log) {
@@ -318,7 +324,7 @@ class Timeline_Plugin
                         'Proyecto visualizado'
                     );
                 }
-                
+
                 $this->load_template('project-timeline');
                 break;
 
@@ -549,7 +555,7 @@ class Timeline_Plugin
 
         if ($result) {
             $new_user_id = $wpdb->insert_id;
-            
+
             // REGISTRAR CREACIÓN DE USUARIO
             if ($this->audit_log) {
                 $this->audit_log->log(

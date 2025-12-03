@@ -308,10 +308,12 @@
                 z-index: 2000;
                 border-left: 1px solid rgba(255, 255, 255, 0.1);
                 overflow-y: auto;
+                display: none;
             }
             
             .navbar-menu.active {
                 right: 0;
+                display: flex;
             }
             
             .navbar-menu a {
@@ -336,10 +338,12 @@
                 z-index: 2000;
                 border-left: 1px solid rgba(255, 255, 255, 0.1);
                 border-top: 1px solid rgba(255, 255, 255, 0.1);
+                display: none;
             }
             
             .navbar-user.active {
                 right: 0;
+                display: block;
             }
             
             .user-info {

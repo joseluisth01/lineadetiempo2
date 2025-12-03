@@ -142,9 +142,13 @@
                 z-index: 2000;
                 border-left: 1px solid #e0e0e0;
                 overflow-y: auto;
+                display: none;
             }
 
-            .navbar-menu.active { right: 0; }
+            .navbar-menu.active { right: 0; 
+            
+            display: flex;
+            }
 
             .navbar-menu a {
                 width: 100%;
@@ -168,9 +172,10 @@
                 z-index: 2000;
                 border-left: 1px solid #e0e0e0;
                 border-top: 1px solid #e0e0e0;
+                display: none;
             }
 
-            .navbar-user.active { right: 0; }
+            .navbar-user.active { right: 0; display: block;}
 
             .user-info {
                 text-align: left;
@@ -294,7 +299,7 @@
             <div class="user-info">
                 <div class="user-name"><?php echo esc_html($current_user->username); ?></div>
             </div>
-            <a href="<?php echo admin_url('admin-post.php?action=timeline_logout'); ?>" class="btn-logout">Salir</a>
+            <a href="<?php echo home_url('/timeline-logout'); ?>" class="btn-logout">Salir</a>
         </div>
     </nav>
 

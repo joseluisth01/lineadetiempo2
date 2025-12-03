@@ -318,8 +318,7 @@
                 right: -100%;
                 width: 280px;
                 height: 100vh;
-
-                /* CLIENTE */
+                display: none;
                 <?php if ($current_user->role === 'cliente'): ?>background: rgba(255, 255, 255, 0.98);
                 border-left: 1px solid #e0e0e0;
                 <?php else: ?>background: rgba(10, 10, 10, 0.98);
@@ -336,6 +335,7 @@
 
             .navbar-menu.active {
                 right: 0;
+                display: flex;
             }
 
             .navbar-menu a {
@@ -351,7 +351,7 @@
                 top: 0px;
                 right: -100%;
                 width: 280px;
-
+                display: none;
                 /* CLIENTE */
                 <?php if ($current_user->role === 'cliente'): ?>background: rgba(250, 250, 250, 0.98);
                 border-left: 1px solid #e0e0e0;
@@ -370,6 +370,7 @@
 
             .navbar-user.active {
                 right: 0;
+                display: block;
             }
 
             .user-info {
@@ -463,7 +464,7 @@
                 </div>
 
             </div>
-            <a href="<?php echo admin_url('admin-post.php?action=timeline_logout'); ?>" class="btn-logout">Salir</a>
+            <a href="<?php echo home_url('/timeline-logout'); ?>" class="btn-logout">Salir</a>
             <div class="profile">
                 <?php if ($current_user->role === 'cliente'): ?>
                     <a href="<?php echo home_url('/timeline-mis-proyectos'); ?>">Mis Proyectos</a><br><br><br>
