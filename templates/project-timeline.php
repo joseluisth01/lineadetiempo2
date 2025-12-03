@@ -276,16 +276,16 @@ foreach ($milestones as $index => $milestone) {
         }
 
         .vertical-timeline::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: black;
-    transform: translateX(-50%);
-    z-index: 0;
-}
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: black;
+            transform: translateX(-50%);
+            z-index: 0;
+        }
 
         /* Línea continua hasta el último hito dentro del plazo */
         .vertical-timeline.has-extension::before {
@@ -632,16 +632,37 @@ foreach ($milestones as $index => $milestone) {
             padding: 30px;
             padding-top: 0px;
             border-radius: 20px;
+            touch-action: pan-y;
+            /* Permite scroll vertical pero captura horizontal */
+            user-select: none;
+            /* Evita selección de texto durante el arrastre */
+        }
+
+        .carousel-slides-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
         }
 
         .carousel-slide {
             display: none;
             width: 100%;
             height: 100%;
+            transition: transform 0.3s ease-out;
+            /* Suaviza las transiciones */
         }
 
         .carousel-slide.active {
             display: block;
+        }
+
+        .carousel-slides-container.dragging {
+            cursor: grabbing;
+        }
+
+        .carousel-slides-container:not(.dragging) {
+            cursor: grab;
         }
 
         .carousel-slide img {
@@ -658,17 +679,17 @@ foreach ($milestones as $index => $milestone) {
 
         .carousel-indicators {
             position: absolute;
-            bottom: 20px;
+            bottom: 45px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             gap: 10px;
             z-index: 10;
-            display: none;
+            justify-content: center;
         }
 
         .carousel-indicator {
-            width: 12px;
+            width: 12px !important;
             height: 12px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.5);
@@ -764,13 +785,14 @@ foreach ($milestones as $index => $milestone) {
             cursor: not-allowed;
         }
 
-        @media (max-width: 1100px){
-.milestone-inner{
-    flex-direction: column;
-}
-.milestone-card:nth-child(even) .milestone-inner{
-    flex-direction: column;
-}
+        @media (max-width: 1100px) {
+            .milestone-inner {
+                flex-direction: column;
+            }
+
+            .milestone-card:nth-child(even) .milestone-inner {
+                flex-direction: column;
+            }
         }
 
         @media (max-width: 768px) {
@@ -785,23 +807,24 @@ foreach ($milestones as $index => $milestone) {
                 margin-top: 30px;
             }
 
-            .milestone-card:nth-child(even)::after{
+            .milestone-card:nth-child(even)::after {
                 left: 30px;
             }
 
-            .vertical-timeline.has-extension::after{
-                left:30px;
+            .vertical-timeline.has-extension::after {
+                left: 30px;
                 margin-top: 20px;
             }
 
-            .milestone-card:nth-child(even)::before{
-                left: 30px;
-            }
-            .milestone-card:nth-child(odd)::before{
+            .milestone-card:nth-child(even)::before {
                 left: 30px;
             }
 
-            .milestone-card:nth-child(odd)::after{
+            .milestone-card:nth-child(odd)::before {
+                left: 30px;
+            }
+
+            .milestone-card:nth-child(odd)::after {
                 left: 30px;
             }
 
@@ -864,16 +887,16 @@ foreach ($milestones as $index => $milestone) {
                 padding-bottom: 0px;
             }
 
-            .modal-top-left{
+            .modal-top-left {
                 order: 2;
                 justify-content: space-between;
             }
 
-            .milestone-nav-btn{
+            .milestone-nav-btn {
                 padding: 12px;
             }
 
-            .modal-top-right{
+            .modal-top-right {
                 width: 100%;
                 justify-content: space-between;
             }
@@ -1264,12 +1287,19 @@ foreach ($milestones as $index => $milestone) {
 
             totalSlides = images.length;
 
+            // Crear contenedor de slides
+            const slidesContainer = document.createElement('div');
+            slidesContainer.className = 'carousel-slides-container';
+            slidesContainer.id = 'carouselSlidesContainer';
+
             images.forEach((img, index) => {
                 const slide = document.createElement('div');
                 slide.className = 'carousel-slide' + (index === 0 ? ' active' : '');
-                slide.innerHTML = `<img src="${img.image_url}" alt="Imagen ${index + 1}">`;
-                carousel.appendChild(slide);
+                slide.innerHTML = `<img src="${img.image_url}" alt="Imagen ${index + 1}" draggable="false">`;
+                slidesContainer.appendChild(slide);
             });
+
+            carousel.appendChild(slidesContainer);
 
             if (images.length > 1) {
                 const indicators = document.createElement('div');
@@ -1282,6 +1312,9 @@ foreach ($milestones as $index => $milestone) {
                 });
                 carousel.appendChild(indicators);
             }
+
+            // Inicializar funcionalidad de swipe
+            initSwipe(slidesContainer);
         }
 
         function changeSlide(direction) {
@@ -1389,6 +1422,116 @@ foreach ($milestones as $index => $milestone) {
         document.addEventListener('DOMContentLoaded', function() {
             setupScrollSync();
         });
+
+
+        function initSwipe(container) {
+            let touchStartX = 0;
+            let touchEndX = 0;
+            let touchStartY = 0;
+            let touchEndY = 0;
+            let isDragging = false;
+
+            // Touch events para móviles
+            container.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+                touchStartY = e.changedTouches[0].screenY;
+                isDragging = true;
+                container.classList.add('dragging');
+            }, {
+                passive: true
+            });
+
+            container.addEventListener('touchmove', function(e) {
+                if (!isDragging) return;
+
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+
+                // Calcular la diferencia
+                const deltaX = Math.abs(touchEndX - touchStartX);
+                const deltaY = Math.abs(touchEndY - touchStartY);
+
+                // Si el movimiento horizontal es mayor que el vertical, prevenir scroll
+                if (deltaX > deltaY) {
+                    e.preventDefault();
+                }
+            }, {
+                passive: false
+            });
+
+            container.addEventListener('touchend', function(e) {
+                if (!isDragging) return;
+
+                touchEndX = e.changedTouches[0].screenX;
+                touchEndY = e.changedTouches[0].screenY;
+                isDragging = false;
+                container.classList.remove('dragging');
+
+                handleSwipe();
+            }, {
+                passive: true
+            });
+
+            // Mouse events para desktop (opcional, pero útil)
+            let mouseStartX = 0;
+            let isMouseDragging = false;
+
+            container.addEventListener('mousedown', function(e) {
+                mouseStartX = e.screenX;
+                isMouseDragging = true;
+                container.classList.add('dragging');
+                e.preventDefault();
+            });
+
+            container.addEventListener('mousemove', function(e) {
+                if (!isMouseDragging) return;
+                e.preventDefault();
+            });
+
+            container.addEventListener('mouseup', function(e) {
+                if (!isMouseDragging) return;
+
+                const mouseEndX = e.screenX;
+                isMouseDragging = false;
+                container.classList.remove('dragging');
+
+                const deltaX = mouseStartX - mouseEndX;
+
+                // Mínimo 50px de arrastre para cambiar slide
+                if (Math.abs(deltaX) > 50) {
+                    if (deltaX > 0) {
+                        // Arrastre hacia la izquierda = siguiente
+                        changeSlide(1);
+                    } else {
+                        // Arrastre hacia la derecha = anterior
+                        changeSlide(-1);
+                    }
+                }
+            });
+
+            container.addEventListener('mouseleave', function() {
+                if (isMouseDragging) {
+                    isMouseDragging = false;
+                    container.classList.remove('dragging');
+                }
+            });
+
+            function handleSwipe() {
+                const deltaX = touchStartX - touchEndX;
+                const deltaY = Math.abs(touchStartY - touchEndY);
+
+                // Mínimo 50px de swipe horizontal y que sea más horizontal que vertical
+                if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > deltaY) {
+                    if (deltaX > 0) {
+                        // Swipe hacia la izquierda = siguiente imagen
+                        changeSlide(1);
+                    } else {
+                        // Swipe hacia la derecha = imagen anterior
+                        changeSlide(-1);
+                    }
+                }
+            }
+        }
     </script>
 </body>
 
